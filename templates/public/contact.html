@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact & Locations | ispice majesty</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body class="dark-theme theme-charcoal">
+
+    <!-- 3D WebGL Background Canvas Container for Standalone Pages -->
+    <div id="page-3d-container" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; opacity: 0.55;"></div>
+
+    <!-- SECTION 1: HEADER NAVBAR (Identical to Home Page) -->
+    <header class="navbar scrolled" id="navbar" style="z-index: 100;">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="brand-logo">
+                <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="ispice majesty Logo" class="brand-logo-img">
+            </a>
+
+            <nav class="nav-menu" id="navMenu">
+                <a href="{{ url_for('home') }}" class="nav-link ">Exhibition</a>
+                <a href="{{ url_for('customer_restaurants') }}" class="nav-link ">Restaurants</a>
+                <a href="{{ url_for('public_menu') }}" class="nav-link ">Gourmet Menu</a>
+                <a href="{{ url_for('about') }}" class="nav-link ">About</a>
+                <a href="{{ url_for('faq') }}" class="nav-link ">Help / FAQ</a>
+                <a href="{{ url_for('contact') }}" class="nav-link active">Contact</a>
+                <details class="nav-dropdown"><summary class="nav-link">My pages <i data-lucide="chevron-down"></i></summary><div class="nav-dropdown-menu"><a href="../customer/dashboard.html"><i data-lucide="layout-dashboard"></i>Dashboard</a><a href="../customer/restaurants.html"><i data-lucide="store"></i>Restaurants</a><a href="menu.html"><i data-lucide="utensils"></i>Gourmet menu</a><a href="../customer/restaurant_details.html"><i data-lucide="map-pin"></i>Venue details</a><a href="../customer/orders.html"><i data-lucide="receipt"></i>My orders</a><a href="../customer/tracking.html"><i data-lucide="navigation"></i>Track order</a><a href="../customer/profile.html"><i data-lucide="user"></i>My profile</a><a href="../customer/feedback.html"><i data-lucide="message-square-heart"></i>Feedback</a><a href="../customer/cart.html"><i data-lucide="shopping-bag"></i>Cart</a><a href="reserve.html"><i data-lucide="calendar"></i>Reserve a table</a><a href="track.html"><i data-lucide="map"></i>Live GPS</a><a href="privacy.html"><i data-lucide="shield"></i>Privacy & terms</a></div></details>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Theme (Dark / Light)">
+                    <i data-lucide="sun" class="sun-icon"></i>
+                    <i data-lucide="moon" class="moon-icon"></i>
+                </button>
+
+                <a href="{{ url_for('login') }}" class="icon-btn" title="Customer sign in">
+                    <i data-lucide="shield-check"></i>
+                    <span class="btn-text">Sign in</span>
+                </a>
+
+                <a href="{{ url_for('public_reserve') }}" class="icon-btn" title="Book a Table">
+                    <i data-lucide="calendar"></i>
+                    <span class="btn-text">Reserve</span>
+                </a>
+
+                <a href="{{ url_for('customer_cart') }}" class="cart-trigger-btn" id="cartToggleBtn" title="Shopping Cart">
+                    <i data-lucide="shopping-bag"></i>
+                    <span class="cart-badge" id="cartCount">1</span>
+                </a>
+
+                <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION 2: PAGE HERO BANNER -->
+    <div class="page-header-banner" style="position: relative; z-index: 2;">
+        <span class="sub-heading"><i data-lucide="sparkles"></i> CONCIERGE DESK</span>
+        <h1 class="page-title">CONTACT & <span class='gradient-text'>LOCATIONS</span></h1>
+        <p class="page-subtitle">Connect with our gastronomic concierges or visit our flagship venue.</p>
+    </div>
+
+    <!-- SECTION 3: MAIN INTERACTIVE WORKSPACE -->
+    <main class="container" style="position: relative; z-index: 2; padding-bottom: 4rem;">
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; max-width: 950px; margin: 0 auto;">
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 2.5rem; backdrop-filter: blur(25px);">
+                <h3 style="font-family: var(--font-heading); margin-bottom: 1.25rem;">Concierge Desk Form</h3>
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label>Your Name</label>
+                        <input type="text" placeholder="e.g. Julian Thorne" required style="width:100%; padding:0.85rem; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:10px; color:#FFF;">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" placeholder="julian@ispice.com" required style="width:100%; padding:0.85rem; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:10px; color:#FFF;">
+                    </div>
+                    <div class="form-group">
+                        <label>Message Inquiry</label>
+                        <textarea rows="4" placeholder="How can we assist your dining experience?" required style="width:100%; padding:0.85rem; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:10px; color:#FFF;"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-glow" style="width:100%; justify-content: center;"><i data-lucide="send"></i> Send Message</button>
+                </form>
+            </div>
+
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border-light); border-radius: var(--radius-lg); padding: 2.5rem; display: flex; flex-direction: column; justify-content: space-between; backdrop-filter: blur(25px);">
+                <div>
+                    <h3 style="font-family: var(--font-heading); margin-bottom: 1.25rem;">Flagship Exhibition Venue</h3>
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 1.1rem; color: var(--text-muted); font-size: 0.95rem;">
+                        <li style="display: flex; align-items: center; gap: 0.75rem;"><i data-lucide="map-pin" style="color: var(--primary);"></i> 845 Grand Avenue, Culinary District</li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem;"><i data-lucide="phone" style="color: var(--primary);"></i> +1 (800) 555-ISPICE</li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem;"><i data-lucide="mail" style="color: var(--primary);"></i> concierge@ispicemajesty.com</li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem;"><i data-lucide="clock" style="color: var(--primary);"></i> Hours: 11:00 AM - 11:00 PM Daily</li>
+                    </ul>
+                </div>
+                <div style="margin-top: 2rem;">
+                    <a href="{{ url_for('public_reserve') }}" class="btn btn-outline" style="width: 100%; justify-content: center;"><i data-lucide="calendar"></i> Reserve Dining Table</a>
+                </div>
+            </div>
+        </div>
+        
+    </main>
+
+    <!-- SECTION 4: FEATURE HIGHLIGHTS & METRICS GRID -->
+    <section class="container" style="position: relative; z-index: 2; padding-bottom: 5rem;">
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; text-align: center;">
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="car" style="color: var(--primary); width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">Valet Parking</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Complimentary executive valet at main entrance.</p>
+            </div>
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="glass-water" style="color: var(--accent-green); width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">Private Dining</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Exclusive VIP tasting rooms for private parties.</p>
+            </div>
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="wifi" style="color: #0088FF; width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">High-Speed Wi-Fi</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Gigabit optical connectivity throughout venue.</p>
+            </div>
+        </div>
+        
+    </section>
+
+    <!-- SECTION 5: SITE FOOTER (Identical to Home Page) -->
+    <footer class="site-footer" style="position: relative; z-index: 2;">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <a href="{{ url_for('home') }}" class="brand-logo">
+                        <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="ispice majesty Logo" class="brand-logo-img">
+                    </a>
+                    <p>Interactive digital culinary exhibition & 3D food showcase.</p>
+                </div>
+
+                <div class="footer-links-group">
+                    <div class="footer-col">
+                        <h4>Navigation</h4>
+                        <ul>
+                            <li><a href="../customer/restaurants.html">Restaurants</a></li>
+                            <li><a href="../public/menu.html">Gourmet Menu</a></li>
+                            <li><a href="../public/about.html">About Us</a></li>
+                            <li><a href="../public/faq.html">Help / FAQ</a></li>
+                            <li><a href="../public/reserve.html">Reserve Table</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>Your workspace</h4>
+                        <ul>
+                            <li><a href="../customer/dashboard.html">Customer Portal</a></li>
+                            <li><a href="../delivery/dashboard.html">Delivery Fleet App</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>Location</h4>
+                        <ul class="contact-info">
+                            <li>845 Grand Avenue, Culinary District</li>
+                            <li>+1 (800) 555-ISPICE</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 ispice majesty Inc. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 3D Canvas Engine & Theme Toggle Script -->
+    <script src="{{ url_for('root_asset', filename='page_3d.js') }}"></script>
+    <script>
+        
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert("Inquiry submitted! Our concierge desk will contact you.");
+        });
+        
+    </script>
+</body>
+</html>

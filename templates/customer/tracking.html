@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Order Tracking | ispice majesty</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dark-theme theme-charcoal">
+
+    <!-- SECTION 1: HEADER NAVBAR (Identical to Home Page) -->
+    <header class="navbar scrolled" id="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="brand-logo">
+                <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="ispice majesty Logo" class="brand-logo-img">
+            </a>
+
+            <nav class="nav-menu" id="navMenu">
+                <a href="{{ url_for('home') }}" class="nav-link ">Exhibition</a>
+                <a href="{{ url_for('customer_restaurants') }}" class="nav-link ">Restaurants</a>
+                <a href="{{ url_for('public_menu') }}" class="nav-link ">Gourmet Menu</a>
+                <a href="{{ url_for('about') }}" class="nav-link ">About</a>
+                <a href="{{ url_for('faq') }}" class="nav-link ">Help / FAQ</a>
+                <a href="{{ url_for('contact') }}" class="nav-link ">Contact</a>
+                <details class="nav-dropdown"><summary class="nav-link">My pages <i data-lucide="chevron-down"></i></summary><div class="nav-dropdown-menu"><a href="dashboard.html"><i data-lucide="layout-dashboard"></i>Dashboard</a><a href="restaurants.html"><i data-lucide="store"></i>Restaurants</a><a href="../public/menu.html"><i data-lucide="utensils"></i>Gourmet menu</a><a href="restaurant_details.html"><i data-lucide="map-pin"></i>Venue details</a><a href="orders.html"><i data-lucide="receipt"></i>My orders</a><a href="tracking.html"><i data-lucide="navigation"></i>Track order</a><a href="profile.html"><i data-lucide="user"></i>My profile</a><a href="feedback.html"><i data-lucide="message-square-heart"></i>Feedback</a><a href="cart.html"><i data-lucide="shopping-bag"></i>Cart</a><a href="../public/reserve.html"><i data-lucide="calendar"></i>Reserve a table</a><a href="../public/track.html"><i data-lucide="map"></i>Live GPS</a><a href="../public/privacy.html"><i data-lucide="shield"></i>Privacy & terms</a></div></details>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Theme (Dark / Light)">
+                    <i data-lucide="sun" class="sun-icon"></i>
+                    <i data-lucide="moon" class="moon-icon"></i>
+                </button>
+
+                <a href="{{ url_for('login') }}" class="icon-btn" title="Customer sign in">
+                    <i data-lucide="shield-check"></i>
+                    <span class="btn-text">Sign in</span>
+                </a>
+
+                <a href="{{ url_for('public_reserve') }}" class="icon-btn" title="Book a Table">
+                    <i data-lucide="calendar"></i>
+                    <span class="btn-text">Reserve</span>
+                </a>
+
+                <a href="{{ url_for('customer_cart') }}" class="cart-trigger-btn" id="cartToggleBtn" title="Shopping Cart">
+                    <i data-lucide="shopping-bag"></i>
+                    <span class="cart-badge" id="cartCount">1</span>
+                </a>
+
+                <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION 2: PAGE HERO BANNER -->
+    <div class="page-header-banner">
+        <span class="sub-heading"><i data-lucide="sparkles"></i> REAL-TIME GPS</span>
+        <h1 class="page-title">ORDER TRACKING <span class='gradient-text'>{{ '#' ~ tracking_order.order_id if tracking_order else '—' }}</span></h1>
+        <p class="page-subtitle">Live delivery status and location updates from your delivery partner.</p>
+    </div>
+
+    <!-- SECTION 3: MAIN INTERACTIVE WORKSPACE -->
+    <main class="container" style="padding-bottom: 4rem;">
+        
+        {% if tracking_order %}
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 2rem; backdrop-filter: blur(25px);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                    <h3><i data-lucide="navigation" style="color: var(--primary);"></i> Dynamic Turn-by-Turn GPS Map</h3>
+                    <span class="status-badge status-dispatched">{{ (tracking_order.delivery_status or tracking_order.status)|upper }}</span>
+                </div>
+                <canvas id="trackCanvas" width="650" height="360" style="width: 100%; height: 360px; background: #07090C; border-radius: 14px; border: 1px solid var(--glass-border);"></canvas>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div style="background: var(--bg-card); border: 1px solid var(--glass-border-light); border-radius: var(--radius-lg); padding: 1.75rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--primary); color: #000; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800;">{{ (tracking_order.partner_name or '—')[:2]|upper }}</div>
+                        <div>
+                            <h3 style="font-size: 1.15rem;">{{ tracking_order.partner_name or 'Awaiting assignment' }}</h3>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">{{ tracking_order.vehicle_type or 'Delivery partner pending' }}</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.88rem; color: var(--text-muted); border-top: 1px solid var(--glass-border); padding-top: 0.85rem;">
+                        <span>Driver Score: <strong style="color: #FFB800;">{{ '%.2f'|format(tracking_order.partner_rating or 0) }} ★</strong></span>
+                        <span>Order total: <strong style="color: var(--text-main);">${{ '%.2f'|format(tracking_order.total_amount or 0) }}</strong></span>
+                    </div>
+                </div>
+
+                <div style="background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 1.75rem;">
+                    <h3 style="margin-bottom: 0.75rem;">Dispatched Items</h3>
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">
+                        <li>{{ tracking_order.order_details }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div style="background:var(--bg-card);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:3rem;text-align:center;color:var(--text-muted);"><i data-lucide="package-search" style="width:44px;height:44px;color:var(--primary);margin-bottom:1rem;"></i><h3>No orders to track yet</h3><p>Your placed orders and delivery updates will appear here.</p><a href="{{ url_for('public_menu') }}" class="btn btn-primary" style="margin-top:1.5rem;">Browse menu</a></div>
+        {% endif %}
+        
+    </main>
+
+    <!-- SECTION 4: FEATURE HIGHLIGHTS & METRICS GRID -->
+    <section class="container" style="padding-bottom: 5rem;">
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; text-align: center;">
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="thermometer" style="color: var(--accent-green); width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">Container Temp</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Logged at 145.2°F optimum heat.</p>
+            </div>
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="shield-check" style="color: var(--primary); width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">Tamper Seal Locked</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Security seal verification code #9201.</p>
+            </div>
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="phone" style="color: #0088FF; width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">Contact Fleet Driver</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Call or message driver Marcus.</p>
+            </div>
+        </div>
+        
+    </section>
+
+    <!-- SECTION 5: SITE FOOTER (Identical to Home Page) -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <a href="{{ url_for('home') }}" class="brand-logo">
+                        <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="ispice majesty Logo" class="brand-logo-img">
+                    </a>
+                    <p>Interactive digital culinary exhibition & 3D food showcase.</p>
+                </div>
+
+                <div class="footer-links-group">
+                    <div class="footer-col">
+                        <h4>Navigation</h4>
+                        <ul>
+                            <li><a href="../customer/restaurants.html">Restaurants</a></li>
+                            <li><a href="../public/menu.html">Gourmet Menu</a></li>
+                            <li><a href="../public/about.html">About Us</a></li>
+                            <li><a href="../public/faq.html">Help / FAQ</a></li>
+                            <li><a href="../public/reserve.html">Reserve Table</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>Your workspace</h4>
+                        <ul>
+                            <li><a href="../customer/dashboard.html">Customer Portal</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>Location</h4>
+                        <ul class="contact-info">
+                            <li>845 Grand Avenue, Culinary District</li>
+                            <li>+1 (800) 555-ISPICE</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 ispice majesty Inc. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        
+        const canvas = document.getElementById('trackCanvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let progress = 0;
+            function animateMap() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const rLat = { x: 100, y: 180 };
+                const cLat = { x: 550, y: 180 };
+
+                ctx.strokeStyle = "rgba(255, 157, 0, 0.35)";
+                ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(rLat.x, rLat.y); ctx.lineTo(cLat.x, cLat.y); ctx.stroke();
+
+                ctx.fillStyle = "#00E676"; ctx.beginPath(); ctx.arc(rLat.x, rLat.y, 10, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = "#FF3B30"; ctx.beginPath(); ctx.arc(cLat.x, cLat.y, 10, 0, Math.PI * 2); ctx.fill();
+
+                progress += 0.003; if (progress > 1) progress = 0;
+                const currX = rLat.x + (cLat.x - rLat.x) * progress;
+
+                ctx.fillStyle = "#FF9D00"; ctx.beginPath(); ctx.arc(currX, rLat.y, 12, 0, Math.PI * 2); ctx.fill();
+                requestAnimationFrame(animateMap);
+            }
+            animateMap();
+        }
+        
+    </script>
+</body>
+</html>

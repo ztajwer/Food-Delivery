@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create customer account | ispice majesty</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dark-theme auth-page">
+    <main class="auth-shell auth-shell-compact">
+        <section class="auth-showcase" aria-label="ispice majesty customer account">
+            <a href="{{ url_for('home') }}" class="brand-logo auth-brand"><img src="{{ url_for('static', filename='assets/logo.png') }}" class="brand-logo-img" alt="ispice majesty home"></a>
+            <div class="auth-showcase-copy"><span class="sub-heading"><i data-lucide="sparkles"></i> Join the guest list</span><h1>MAKE IT<br><span class="gradient-text">MEMORABLE.</span></h1><p>One account for reservations, orders, rewards, and your personal culinary history.</p></div>
+            <div class="auth-showcase-footer"><span><i data-lucide="badge-check"></i> Curated for every guest</span><span><i data-lucide="heart"></i> Save what you love</span></div>
+        </section>
+        <section class="auth-card-wrap">
+            <div class="auth-card">
+                <div class="auth-card-heading"><div><span class="auth-eyebrow">Customer account</span><h2>Create account</h2></div><span class="secure-pill"><i data-lucide="lock-keyhole"></i> UI demo</span></div>
+                <p class="auth-intro">Set up your guest profile in less than a minute.</p>
+                <form id="registerForm" class="auth-form" method="POST" action="{{ url_for('register') }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="auth-form-grid"><div class="form-group"><label for="fullName">Full name</label><input id="fullName" name="name" type="text" autocomplete="name" placeholder="Ava Morgan" required></div><div class="form-group"><label for="phone">Phone number</label><input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="+1 (555) 000-0000" required></div></div>
+                    <div class="form-group"><label for="registerEmail"><i data-lucide="mail"></i> Email address</label><input id="registerEmail" name="email" type="email" autocomplete="email" placeholder="you@example.com" required></div>
+                    <div class="form-group"><label for="registerPassword"><i data-lucide="key-round"></i> Password</label><div class="password-field"><input id="registerPassword" name="password" type="password" autocomplete="new-password" placeholder="At least 6 characters" minlength="6" required><button type="button" class="password-toggle" data-target="registerPassword" aria-label="Show password"><i data-lucide="eye"></i></button></div></div>
+                    <label class="checkbox-label auth-terms"><input type="checkbox" required> <span>I agree to the guest terms and privacy policy.</span></label>
+                    {% if error %}
+                    <p class="auth-status is-visible is-error" aria-live="polite">{{ error }}</p>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary btn-glow auth-submit">Create account <i data-lucide="arrow-right"></i></button>
+                </form>
+                <div class="auth-divider"><span>Already a guest?</span></div><a href="{{ url_for('login') }}" class="btn btn-outline auth-secondary-action">Sign in instead</a><a href="{{ url_for('home') }}" class="auth-back-link"><i data-lucide="arrow-left"></i> Back to exhibition</a>
+            </div>
+        </section>
+    </main>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        document.querySelectorAll('.password-toggle').forEach((toggle) => toggle.addEventListener('click', () => { const input = document.getElementById(toggle.dataset.target); const isPassword = input.type === 'password'; input.type = isPassword ? 'text' : 'password'; toggle.innerHTML = `<i data-lucide="${isPassword ? 'eye-off' : 'eye'}"></i>`; if (typeof lucide !== 'undefined') lucide.createIcons(); }));
+    </script>
+</body>
+</html>

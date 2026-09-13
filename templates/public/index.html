@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA | Digital Culinary Exhibition & Food Delivery Optimization System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.27/bundled/lenis.min.js"></script>
+</head>
+<body class="dark-theme theme-charcoal">
+    <div id="canvas-container" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none;"></div>
+
+    <header class="navbar" id="navbar" style="position: fixed; top: 0; left: 0; width: 100%; z-index: 100; padding: 1.5rem 2.5rem; background: rgba(9, 11, 14, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between;">
+        <a href="{{ url_for('home') }}" class="brand-logo" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+            <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="AURA Logo" class="brand-logo-img">
+        </a>
+        <nav class="nav-menu">
+            <a href="{{ url_for('home') }}" class="nav-link">Exhibition</a><a href="{{ url_for('customer_restaurants') }}" class="nav-link">Restaurants</a><a href="{{ url_for('public_menu') }}" class="nav-link">Gourmet Menu</a><a href="{{ url_for('about') }}" class="nav-link">About</a><a href="{{ url_for('faq') }}" class="nav-link">Help / FAQ</a><a href="{{ url_for('contact') }}" class="nav-link">Contact</a>
+            <details class="nav-dropdown"><summary class="nav-link">My pages <i data-lucide="chevron-down"></i></summary><div class="nav-dropdown-menu"><a href="../customer/dashboard.html"><i data-lucide="layout-dashboard"></i>Dashboard</a><a href="../customer/restaurants.html"><i data-lucide="store"></i>Restaurants</a><a href="menu.html"><i data-lucide="utensils"></i>Gourmet menu</a><a href="../customer/restaurant_details.html"><i data-lucide="map-pin"></i>Venue details</a><a href="../customer/orders.html"><i data-lucide="receipt"></i>My orders</a><a href="../customer/tracking.html"><i data-lucide="navigation"></i>Track order</a><a href="../customer/profile.html"><i data-lucide="user"></i>My profile</a><a href="../customer/feedback.html"><i data-lucide="message-square-heart"></i>Feedback</a><a href="../customer/cart.html"><i data-lucide="shopping-bag"></i>Cart</a><a href="reserve.html"><i data-lucide="calendar"></i>Reserve a table</a><a href="track.html"><i data-lucide="map"></i>Live GPS</a><a href="privacy.html"><i data-lucide="shield"></i>Privacy & terms</a></div></details>
+        </nav>
+        <div style="display: flex; gap: 1rem; align-items: center;"><a href="{{ url_for('login') }}" class="btn-primary" style="text-decoration: none;">Customer Sign in</a><a href="{{ url_for('customer_cart') }}" class="cart-trigger-btn" title="Shopping Cart"><i data-lucide="shopping-bag"></i></a></div>
+    </header>
+
+    <main style="padding-top: 8rem; text-align: center; max-width: 1100px; margin: 0 auto; min-height: 80vh; display: flex; flex-direction: column; justify-content: center;">
+        <h1 style="font-family: 'Syne', sans-serif; font-size: 4rem; text-transform: uppercase; margin-bottom: 1rem;">AURA FOOD DELIVERY OPTIMIZATION SYSTEM</h1>
+        <p style="font-size: 1.25rem; color: var(--text-muted); max-width: 750px; margin: 0 auto 3rem auto;">
+            Final Aptech eProject Architecture. Complete integration of 3D gastronomy exhibition with customer ordering and delivery fleet experiences.
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; text-align: left;">
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 16px;">
+                <h3 style="color: var(--primary); margin-bottom: 0.5rem;"><i data-lucide="user"></i> CUSTOMER PORTAL</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">Explore menu, place orders, real-time GPS tracking, and submit ratings.</p>
+                <a href="{{ url_for('customer_dashboard') }}" class="btn-primary" style="display: inline-block; text-decoration: none; width: 100%; text-align: center;">Open Customer App</a>
+            </div>
+
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 2rem; border-radius: 16px;">
+                <h3 style="color: var(--accent-green); margin-bottom: 0.5rem;"><i data-lucide="truck"></i> DELIVERY FLEET APP</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">Online status toggle, active assignment lifecycle, navigation, & earnings.</p>
+                <a href="{{ url_for('delivery_dashboard') }}" class="btn-primary" style="display: inline-block; background: var(--accent-green); text-decoration: none; width: 100%; text-align: center;">Open Delivery App</a>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    </script>
+</body>
+</html>

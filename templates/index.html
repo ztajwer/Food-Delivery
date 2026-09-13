@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ispice majesty | Digital Culinary Exhibition</title>
+
+    <meta name="description"
+        content="An interactive digital culinary exhibition & 3D food showcase. Experience scroll gastronomy, luxury ordering, and interactive portals.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Syne:wght@600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Main CSS -->
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}?v=chapter-layout-1">
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Three.js Orbit Controls -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- GSAP ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Lenis Smooth Scroll -->
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.27/bundled/lenis.min.js"></script>
+
+</head>
+
+<body class="dark-theme theme-charcoal">
+    {% if session.get('role') == 'Admin' and session.get('portal_preview') == 'Customer' %}<div style="position:fixed;z-index:1000;top:1rem;left:50%;transform:translateX(-50%);background:#16181f;border:1px solid var(--primary);border-radius:999px;padding:.6rem 1rem;color:#fff;display:flex;align-items:center;gap:.75rem;box-shadow:0 10px 30px rgba(0,0,0,.35);"><span>Admin preview: Customer website</span><a href="{{ url_for('admin_exit_preview') }}" style="color:var(--primary);font-weight:700;">Return to Admin</a></div>{% endif %}
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot" id="cursorDot"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+
+    <!-- 3D Canvas Container -->
+    <div id="canvas-container"></div>
+
+
+    <!-- =====================================================
+         CHAPTER INDICATOR
+    ====================================================== -->
+
+    <div class="chapter-indicator" id="chapterIndicator">
+
+        <span class="chapter-num" id="chapterNum">
+            01 / 07
+        </span>
+
+        <span class="chapter-divider"></span>
+
+        <span class="chapter-title" id="chapterTitle">
+            THE CRAVING
+        </span>
+
+    </div>
+
+
+    <!-- =====================================================
+         NAVIGATION HEADER
+    ====================================================== -->
+
+    <header class="navbar" id="navbar">
+
+        <div class="nav-container">
+
+            <!-- Logo -->
+
+            <a href="{{ url_for('home') }}" class="brand-logo">
+
+                <img
+                    src="{{ url_for('static', filename='assets/logo.png') }}"
+                    alt="ispice majesty Logo"
+                    class="brand-logo-img">
+
+            </a>
+
+
+            <!-- Navigation -->
+
+            <nav class="nav-menu" id="navMenu">
+
+                <!-- Home -->
+
+                <a href="{{ url_for('home') }}"
+                    class="nav-link active">
+                    Exhibition
+                </a>
+
+
+                <!-- Restaurants -->
+
+                <a href="{{ url_for('rest') }}"
+                    class="nav-link">
+                    Restaurants
+                </a>
+
+
+                <!-- Gourmet Menu -->
+
+                <a href="{{ url_for('menu') }}"
+                    class="nav-link">
+                    Gourmet Menu
+                </a>
+
+
+                <!-- About -->
+
+                <a href="{{ url_for('about') }}"
+                    class="nav-link">
+                    About
+                </a>
+
+
+                <!-- FAQ -->
+
+                <a href="{{ url_for('faq') }}"
+                    class="nav-link">
+                    Help / FAQ
+                </a>
+
+
+                <!-- Contact -->
+
+                <a href="{{ url_for('contact') }}"
+                    class="nav-link">
+                    Contact
+                </a>
+
+
+                <!-- My Pages Dropdown -->
+
+                <details class="nav-dropdown">
+
+                    <summary class="nav-link">
+
+                        My pages
+
+                        <i data-lucide="chevron-down"></i>
+
+                    </summary>
+
+
+                    <div class="nav-dropdown-menu">
+
+
+                        <!-- Dashboard -->
+
+                        <a href="{{ url_for('customer_dashboard') }}">
+
+                            <i data-lucide="layout-dashboard"></i>
+
+                            Dashboard
+
+                        </a>
+
+
+                        <!-- Customer Restaurants -->
+
+                        <a href="{{ url_for('customer_restaurants') }}">
+
+                            <i data-lucide="store"></i>
+
+                            Restaurants
+
+                        </a>
+
+
+                        <!-- Public Menu -->
+
+                        <a href="{{ url_for('public_menu') }}">
+
+                            <i data-lucide="utensils"></i>
+
+                            Gourmet menu
+
+                        </a>
+
+
+                        <!-- Restaurant Details -->
+
+                        <a href="{{ url_for('customer_restaurant_details') }}">
+
+                            <i data-lucide="map-pin"></i>
+
+                            Venue details
+
+                        </a>
+
+
+                        <!-- Orders -->
+
+                        <a href="{{ url_for('customer_orders') }}">
+
+                            <i data-lucide="receipt"></i>
+
+                            My orders
+
+                        </a>
+
+
+                        <!-- Tracking -->
+
+                        <a href="{{ url_for('customer_tracking') }}">
+
+                            <i data-lucide="navigation"></i>
+
+                            Track order
+
+                        </a>
+
+
+                        <!-- Profile -->
+
+                        <a href="{{ url_for('customer_profile') }}">
+
+                            <i data-lucide="user"></i>
+
+                            My profile
+
+                        </a>
+
+
+                        <!-- Feedback -->
+
+                        <a href="{{ url_for('customer_feedback') }}">
+
+                            <i data-lucide="message-square-heart"></i>
+
+                            Feedback
+
+                        </a>
+
+
+                        <!-- Cart -->
+
+                        <a href="{{ url_for('customer_cart') }}">
+
+                            <i data-lucide="shopping-bag"></i>
+
+                            Cart
+
+                        </a>
+
+
+                        <!-- Reservation -->
+
+                        <a href="{{ url_for('public_reserve') }}">
+
+                            <i data-lucide="calendar"></i>
+
+                            Reserve a table
+
+                        </a>
+
+
+                        <!-- Live GPS -->
+
+                        <a href="{{ url_for('public_track') }}">
+
+                            <i data-lucide="map"></i>
+
+                            Live GPS
+
+                        </a>
+
+
+                        <!-- Privacy -->
+
+                        <a href="{{ url_for('public_privacy') }}">
+
+                            <i data-lucide="shield"></i>
+
+                            Privacy & terms
+
+                        </a>
+
+                    </div>
+
+                </details>
+
+            </nav>
+
+
+            <!-- Navigation Actions -->
+
+            <div class="nav-actions">
+
+
+                <!-- Theme Toggle -->
+
+                <button
+                    class="theme-toggle-btn"
+                    id="themeToggleBtn"
+                    title="Toggle Theme (Dark / Light)">
+
+                    <i
+                        data-lucide="sun"
+                        class="sun-icon">
+                    </i>
+
+                    <i
+                        data-lucide="moon"
+                        class="moon-icon">
+                    </i>
+
+                </button>
+
+
+                <!-- Sign In -->
+
+                <a
+                    href="{{ url_for('login') }}"
+                    class="icon-btn"
+                    title="Customer sign in">
+
+                    <i data-lucide="shield-check"></i>
+
+                    <span class="btn-text">
+                        Sign in
+                    </span>
+
+                </a>
+
+
+                <!-- Reserve -->
+
+                <a
+                    href="{{ url_for('public_reserve') }}"
+                    class="icon-btn"
+                    title="Book a Table">
+
+                    <i data-lucide="calendar"></i>
+
+                    <span class="btn-text">
+                        Reserve
+                    </span>
+
+                </a>
+
+
+                <!-- Cart -->
+
+                <a
+                    href="{{ url_for('customer_cart') }}"
+                    class="cart-trigger-btn"
+                    id="cartToggleBtn"
+                    title="Shopping Cart">
+
+                    <i data-lucide="shopping-bag"></i>
+
+                    <span
+                        class="cart-badge"
+                        id="cartCount">
+                        0
+                    </span>
+
+                </a>
+
+
+                <!-- Mobile Menu -->
+
+                <button
+                    class="mobile-toggle"
+                    id="mobileToggle"
+                    aria-label="Toggle navigation">
+
+                    <i data-lucide="menu"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =================================================
+             CHAPTER 01: HERO
+        ================================================== -->
+
+        <section
+            id="hero"
+            class="chapter-section hero-chapter"
+            data-chapter="01"
+            data-title="THE CRAVING"
+            data-theme="theme-charcoal">
+
+
+            <div class="hero-left-column">
+
+
+                <span class="editorial-tag">
+
+                    <i data-lucide="sparkles"></i>
+
+                    2026 DIGITAL CULINARY EXHIBITION
+
+                </span>
+
+
+                <h1 class="hero-giant-title">
+
+
+                    <span class="title-line title-line-1">
+                        ispice majesty
+                    </span>
+
+
+                    <span class="title-line title-line-2">
+                        CULINARY
+                    </span>
+
+
+                    <span class="title-line title-line-3 gradient-text">
+                        IN MOTION.
+                    </span>
+
+
+                </h1>
+
+
+                <p class="hero-manifesto">
+
+                    We redefined gourmet dining as a living 3D sculpture.
+                    Deconstructed in real-time space with high-fashion
+                    typography and interactive 3D physics.
+
+                </p>
+
+
+                <div class="hero-cta-inline">
+
+
+                    <!-- Explore Restaurants -->
+
+                    <a
+                        href="{{ url_for('customer_restaurants') }}"
+                        class="btn btn-primary btn-glow">
+
+                        <span>
+                            Explore Restaurants
+                        </span>
+
+                        <i data-lucide="arrow-right"></i>
+
+                    </a>
+
+
+                    <!-- Reserve Table -->
+
+                    <a
+                        href="{{ url_for('public_reserve') }}"
+                        class="btn btn-outline">
+
+                        <i data-lucide="calendar"></i>
+
+                        <span>
+                            Reserve A Table
+                        </span>
+
+                    </a>
+
+
+                </div>
+
+
+                <div class="hero-meta-badge">
+
+                    <span class="meta-num">
+                        01 / 07
+                    </span>
+
+                    <span class="meta-label">
+                        THE CRAVING
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- Hero 3D -->
+
+            <div class="hero-right-column">
+
+                <div
+                    class="hero-visual-3d"
+                    id="heroVisual3D">
+
+                    <!-- 3D WebGL Canvas renders here -->
+
+                </div>
+
+            </div>
+
+
+            <!-- Scroll Hint -->
+
+            <div class="scroll-down-hint">
+
+                <span>
+                    SCROLL TO DECONSTRUCT
+                </span>
+
+                <i data-lucide="arrow-down"></i>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             CHAPTER 02: THE CRAFT
+        ================================================== -->
+
+        <section
+            id="craft"
+            class="chapter-section craft-chapter"
+            data-chapter="02"
+            data-title="THE CRAFT"
+            data-theme="theme-cream">
+
+
+            <div class="container">
+
+
+                <div class="craft-text-sequence">
+
+
+                    <h2 class="craft-headline craft-line-1">
+
+                        FOOD SHOULD
+
+                        <span class="accent-word">
+                            MOVE.
+                        </span>
+
+                    </h2>
+
+
+                    <h2 class="craft-headline craft-line-2">
+
+                        FEEL THE
+
+                        <span class="accent-word">
+                            TEXTURE.
+                        </span>
+
+                    </h2>
+
+
+                    <h2 class="craft-headline craft-line-3">
+
+                        BREAK THE
+
+                        <span class="accent-word">
+                            ORDINARY.
+                        </span>
+
+                    </h2>
+
+
+                    <h2 class="craft-headline craft-line-4">
+
+                        BUILD THE
+
+                        <span class="accent-word">
+                            FUTURE.
+                        </span>
+
+                    </h2>
+
+
+                </div>
+
+
+                <div class="craft-side-card">
+
+
+                    <div class="craft-badge">
+
+                        <i data-lucide="layers"></i>
+
+                        Gastronomic Physics
+
+                    </div>
+
+
+                    <p>
+
+                        Every ingredient layer responds to your touch
+                        and scroll depth. Watch organic brioche, wagyu
+                        beef, and white-oak cheddar separate in 3D
+                        virtual space.
+
+                    </p>
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             CHAPTER 03: SIGNATURE ZOOM THROUGH
+        ================================================== -->
+
+        <section
+            id="zoom-through"
+            class="chapter-section zoom-chapter"
+            data-chapter="03"
+            data-title="THE BUILD"
+            data-theme="theme-fire">
+
+
+            <div class="zoom-text-overlays">
+
+
+                <!-- Brioche -->
+
+                <div
+                    class="zoom-layer-info layer-bun"
+                    id="infoBun">
+
+                    <span class="layer-step">
+                        01 / CROWN
+                    </span>
+
+                    <h2 class="zoom-title">
+                        BRIOCHE
+                    </h2>
+
+                    <p class="zoom-desc">
+                        TOASTED. BUTTERY. SESAME-CRUSTED.
+                    </p>
+
+                </div>
+
+
+                <!-- Greens -->
+
+                <div
+                    class="zoom-layer-info layer-lettuce"
+                    id="infoLettuce">
+
+                    <span class="layer-step">
+                        02 / FRESH
+                    </span>
+
+                    <h2 class="zoom-title">
+                        GREENS
+                    </h2>
+
+                    <p class="zoom-desc">
+                        CRISP. HYDROPONIC. TRUFFLED AIOLI.
+                    </p>
+
+                </div>
+
+
+                <!-- Cheddar -->
+
+                <div
+                    class="zoom-layer-info layer-cheese"
+                    id="infoCheese">
+
+                    <span class="layer-step">
+                        03 / MELT
+                    </span>
+
+                    <h2 class="zoom-title">
+                        CHEDDAR
+                    </h2>
+
+                    <p class="zoom-desc">
+                        18-MONTH AGED. STRETCH. FLOW.
+                    </p>
+
+                </div>
+
+
+                <!-- Wagyu -->
+
+                <div
+                    class="zoom-layer-info layer-patty"
+                    id="infoPatty">
+
+                    <span class="layer-step">
+                        04 / PRIME
+                    </span>
+
+                    <h2 class="zoom-title">
+                        A5 WAGYU
+                    </h2>
+
+                    <p class="zoom-desc">
+                        SEA-SALT CRUSTED. EMBER GOLDSMITH.
+                    </p>
+
+                </div>
+
+
+                <!-- Tomato -->
+
+                <div
+                    class="zoom-layer-info layer-tomato"
+                    id="infoTomato">
+
+                    <span class="layer-step">
+                        05 / JUICE
+                    </span>
+
+                    <h2 class="zoom-title">
+                        HEIRLOOM
+                    </h2>
+
+                    <p class="zoom-desc">
+                        SUN-RIPENED. ACIDIC. BALANCED.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             CHAPTER 04: INGREDIENT WALL
+        ================================================== -->
+
+        <section
+            id="ingredient-wall"
+            class="chapter-section wall-chapter"
+            data-chapter="04"
+            data-title="THE INGREDIENT"
+            data-theme="theme-emerald">
+
+
+            <div class="container">
+
+
+                <div class="wall-header">
+
+
+                    <span class="sub-heading">
+
+                        <i data-lucide="sparkles"></i>
+
+                        Pure Provenance
+
+                    </span>
+
+
+                    <h2 class="section-title">
+
+                        The Ingredient
+
+                        <span class="gradient-text">
+                            Exhibition
+                        </span>
+
+                    </h2>
+
+
+                </div>
+
+
+                <div class="ingredient-wall-grid">
+
+
+                    <!-- Wagyu -->
+
+                    <div
+                        class="wall-item"
+                        data-ingredient="wagyu">
+
+                        <span class="wall-num">
+                            01
+                        </span>
+
+                        <h3 class="wall-word">
+                            WAGYU
+                        </h3>
+
+
+                        <div class="wall-details">
+
+                            <span class="wall-tag">
+                                Grade A5 Miyazaki
+                            </span>
+
+                            <p>
+                                Hand-selected marbling charred over
+                                Japanese white oak charcoal.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Cheddar -->
+
+                    <div
+                        class="wall-item"
+                        data-ingredient="cheese">
+
+                        <span class="wall-num">
+                            02
+                        </span>
+
+                        <h3 class="wall-word">
+                            CHEDDAR
+                        </h3>
+
+
+                        <div class="wall-details">
+
+                            <span class="wall-tag">
+                                18-Month Cave Aged
+                            </span>
+
+                            <p>
+                                Sharp, creamy melt infused with subtle
+                                hazelnut undertones.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Truffle -->
+
+                    <div
+                        class="wall-item"
+                        data-ingredient="truffle">
+
+                        <span class="wall-num">
+                            03
+                        </span>
+
+                        <h3 class="wall-word">
+                            TRUFFLE
+                        </h3>
+
+
+                        <div class="wall-details">
+
+                            <span class="wall-tag">
+                                Piedmont Black Winter
+                            </span>
+
+                            <p>
+                                Shaved tableside with cold-pressed
+                                extra virgin olive drizzle.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Greens -->
+
+                    <div
+                        class="wall-item"
+                        data-ingredient="greens">
+
+                        <span class="wall-num">
+                            04
+                        </span>
+
+                        <h3 class="wall-word">
+                            GREENS
+                        </h3>
+
+
+                        <div class="wall-details">
+
+                            <span class="wall-tag">
+                                Zero-Pesticide Farm
+                            </span>
+
+                            <p>
+                                Harvested same-day from local vertical
+                                hydroponic gardens.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             CHAPTER 05: MENU CATALOG
+        ================================================== -->
+
+        <section
+            id="menu"
+            class="chapter-section menu-chapter"
+            data-chapter="05"
+            data-title="THE MENU"
+            data-theme="theme-slate">
+
+
+            <div class="container">
+
+
+                <div class="editorial-menu-header">
+
+
+                    <div class="menu-title-block">
+
+
+                        <span class="sub-heading">
+
+                            <i data-lucide="utensils"></i>
+
+                            Curated Gastronomy
+
+                        </span>
+
+
+                        <h2 class="editorial-menu-title">
+
+                            OUR GOURMET
+
+                            <span class="gradient-text">
+                                CREATIONS
+                            </span>
+
+                        </h2>
+
+
+                    </div>
+
+
+                    <div class="menu-controls-right">
+
+
+                        <div
+                            class="category-filters"
+                            id="categoryFilters">
+
+
+                            <button
+                                class="filter-btn active"
+                                data-category="all">
+
+                                All Items
+
+                            </button>
+
+
+                            <button
+                                class="filter-btn"
+                                data-category="burgers">
+
+                                3D Burgers
+
+                            </button>
+
+
+                            <button
+                                class="filter-btn"
+                                data-category="pizza">
+
+                                Artisan Pizzas
+
+                            </button>
+
+
+                            <button
+                                class="filter-btn"
+                                data-category="bowls">
+
+                                Power Bowls
+
+                            </button>
+
+
+                            <button
+                                class="filter-btn"
+                                data-category="drinks">
+
+                                Craft Elixirs
+
+                            </button>
+
+
+                        </div>
+
+
+                        <div class="view-toggle-wrap">
+
+
+                            <button
+                                class="view-btn active"
+                                id="viewToggleGrid"
+                                title="Grid Cards View">
+
+                                <i data-lucide="layout-grid"></i>
+
+                            </button>
+
+
+                            <button
+                                class="view-btn"
+                                id="viewToggleList"
+                                title="Editorial List View">
+
+                                <i data-lucide="list"></i>
+
+                            </button>
+
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="menu-display-container grid-mode"
+                    id="menuGrid">
+
+                    <!-- Dynamic Menu Cards Rendering -->
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             CHAPTER 06: TASTE QUIZ & REVIEWS
+        ================================================== -->
+
+        <section
+            id="quiz"
+            class="chapter-section quiz-reviews-chapter"
+            data-chapter="06"
+            data-title="THE BITE"
+            data-theme="theme-onyx">
+
+
+            <div class="container">
+
+
+                <div class="quiz-editorial-wrapper">
+
+
+                    <div class="quiz-badge">
+
+                        <i data-lucide="wand-2"></i>
+
+                        AI TASTE CONCIERGE
+
+                    </div>
+
+
+                    <h2 class="quiz-giant-heading">
+
+                        WHAT ARE YOU
+
+                        <span class="gradient-text">
+                            CRAVING?
+                        </span>
+
+                    </h2>
+
+
+                    <div
+                        class="quiz-box"
+                        id="quizBox">
+
+
+                        <!-- Question 1 -->
+
+                        <div
+                            class="quiz-step active"
+                            data-quiz-step="1">
+
+
+                            <h3 class="quiz-q-title">
+
+                                Select your desired flavor profile:
+
+                            </h3>
+
+
+                            <div class="quiz-options-editorial">
+
+
+                                <button
+                                    class="quiz-opt-ed"
+                                    data-key="flavor"
+                                    data-val="savory">
+
+                                    <span class="opt-code">
+                                        A
+                                    </span>
+
+                                    <span class="opt-label">
+                                        RICH & SAVORY
+                                    </span>
+
+                                </button>
+
+
+                                <button
+                                    class="quiz-opt-ed"
+                                    data-key="flavor"
+                                    data-val="spicy">
+
+                                    <span class="opt-code">
+                                        B
+                                    </span>
+
+                                    <span class="opt-label">
+                                        FIERY & SPICY
+                                    </span>
+
+                                </button>
+
+
+                                <button
+                                    class="quiz-opt-ed"
+                                    data-key="flavor"
+                                    data-val="fresh">
+
+                                    <span class="opt-code">
+                                        C
+                                    </span>
+
+                                    <span class="opt-label">
+                                        FRESH & CRISP
+                                    </span>
+
+                                </button>
+
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Question 2 -->
+
+                        <div
+                            class="quiz-step"
+                            data-quiz-step="2">
+
+
+                            <h3 class="quiz-q-title">
+
+                                Select your main protein preference:
+
+                            </h3>
+
+
+                            <div class="quiz-options-editorial">
+
+
+                                <button
+                                    class="quiz-opt-ed"
+                                    data-key="protein"
+                                    data-val="beef">
+
+                                    <span class="opt-code">
+                                        01
+                                    </span>
+
+                                    <span class="opt-label">
+                                        PRIME WAGYU
+                                    </span>
+
+                                </button>
+
+
+                                <button
+                                    class="quiz-opt-ed"
+                                    data-key="protein"
+                                    data-val="chicken">
+
+                                    <span class="opt-code">
+                                        02
+                                    </span>
+
+                                    <span class="opt-label">
+                                        FREE-RANGE POULTRY
+                                    </span>
+
+                                </button>
+
+
+                                <button
+                                    class="quiz-opt-ed"
+                                    data-key="protein"
+                                    data-val="vegan">
+
+                                    <span class="opt-code">
+                                        03
+                                    </span>
+
+                                    <span class="opt-label">
+                                        PLANT-BASED GOURMET
+                                    </span>
+
+                                </button>
+
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Question 3 -->
+
+                        <div
+                            class="quiz-step"
+                            data-quiz-step="3">
+
+
+                            <h3 class="quiz-q-title">
+
+                                Dining Vibe & Occasion:
+
+                            </h3>
+
+
+                            <div class="quiz-options-editorial">
+
+
+                                <button
+                                    class="quiz-opt-ed"
+                                    data-key="vibe"
+                                    data-val="quick">
+
+                                    <span class="opt-code">
+                                        I
+                                    </span>
+
+                                    <span class="opt-label">
+                                        EXPRESS GOURMET
+                                    </span>
+
+                                </button>
+
+
+                                <button
+                                    class="quiz-opt-ed"
+                                    data-key="vibe"
+                                    data-val="luxury">
+
+                                    <span class="opt-code">
+                                        II
+                                    </span>
+
+                                    <span class="opt-label">
+                                        LUXURY INDULGENCE
+                                    </span>
+
+                                </button>
+
+
+                                <button
+                                    class="quiz-opt-ed"
+                                    data-key="vibe"
+                                    data-val="light">
+
+                                    <span class="opt-code">
+                                        III
+                                    </span>
+
+                                    <span class="opt-label">
+                                        CLEAN & ENERGIZING
+                                    </span>
+
+                                </button>
+
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Quiz Result -->
+
+                        <div
+                            class="quiz-result-editorial"
+                            id="quizResult"
+                            style="display: none;">
+
+
+                            <span class="result-label">
+
+                                <i data-lucide="check-circle-2"></i>
+
+                                YOUR MATCHED PROFILE
+
+                            </span>
+
+
+                            <h3
+                                id="resultDishName"
+                                class="result-title">
+
+                                ispice majesty Prime Wagyu Truffle
+
+                            </h3>
+
+
+                            <p
+                                id="resultDishDesc"
+                                class="result-desc">
+
+                                Infused with black winter truffle aioli
+                                and 18-month aged cheddar.
+
+                            </p>
+
+
+                            <div
+                                class="result-cta-row"
+                                style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center;">
+
+
+                                <!-- Order Matched Creation -->
+
+                                <a
+                                    href="{{ url_for('customer_cart') }}"
+                                    class="btn btn-primary btn-glow"
+                                    id="addResultToCart">
+
+                                    <i data-lucide="shopping-bag"></i>
+
+                                    Order Matched Creation
+
+                                </a>
+
+
+                                <!-- Retake Quiz -->
+
+                                <button
+                                    class="btn btn-outline"
+                                    id="restartQuiz">
+
+                                    <i data-lucide="rotate-ccw"></i>
+
+                                    Retake Questionnaire
+
+                                </button>
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="site-footer">
+
+
+        <div class="container">
+
+
+            <div class="footer-top">
+
+
+                <!-- Footer Brand -->
+
+                <div class="footer-brand">
+
+
+                    <a
+                        href="{{ url_for('home') }}"
+                        class="brand-logo">
+
+                        <img
+                            src="{{ url_for('static', filename='assets/logo.png') }}"
+                            alt="ispice majesty Logo"
+                            class="brand-logo-img">
+
+                    </a>
+
+
+                    <p>
+                        Interactive digital culinary exhibition
+                        & 3D food showcase.
+                    </p>
+
+
+                </div>
+
+
+
+                <!-- Footer Links -->
+
+                <div class="footer-links-group">
+
+
+                    <!-- Navigation -->
+
+                    <div class="footer-col">
+
+
+                        <h4>
+                            Navigation
+                        </h4>
+
+
+                        <ul>
+
+
+                            <li>
+
+                                <a
+                                    href="{{ url_for('customer_restaurants') }}">
+
+                                    Restaurants
+
+                                </a>
+
+                            </li>
+
+
+                            <li>
+
+                                <a
+                                    href="{{ url_for('public_menu') }}">
+
+                                    Gourmet Menu
+
+                                </a>
+
+                            </li>
+
+
+                            <li>
+
+                                <a
+                                    href="{{ url_for('about') }}">
+
+                                    About Us
+
+                                </a>
+
+                            </li>
+
+
+                            <li>
+
+                                <a
+                                    href="{{ url_for('faq') }}">
+
+                                    Help / FAQ
+
+                                </a>
+
+                            </li>
+
+
+                            <li>
+
+                                <a
+                                    href="{{ url_for('public_reserve') }}">
+
+                                    Reserve Table
+
+                                </a>
+
+                            </li>
+
+
+                        </ul>
+
+                    </div>
+
+
+
+                    <!-- Workspace -->
+
+                    <div class="footer-col">
+
+
+                        <h4>
+                            Your workspace
+                        </h4>
+
+
+                        <ul>
+
+
+                            <li>
+
+                                <a
+                                    href="{{ url_for('customer_dashboard') }}">
+
+                                    Customer Portal
+
+                                </a>
+
+                            </li>
+
+
+                            <li>
+
+                                <a
+                                    href="{{ url_for('delivery_dashboard') }}">
+
+                                    Delivery Fleet App
+
+                                </a>
+
+                            </li>
+
+
+                        </ul>
+
+                    </div>
+
+
+
+                    <!-- Location -->
+
+                    <div class="footer-col">
+
+
+                        <h4>
+                            Location
+                        </h4>
+
+
+                        <ul class="contact-info">
+
+
+                            <li>
+                                845 Grand Avenue,
+                                Culinary District
+                            </li>
+
+
+                            <li>
+                                +1 (800) 555-ISPICE
+                            </li>
+
+
+                        </ul>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Footer Bottom -->
+
+            <div class="footer-bottom">
+
+
+                <p>
+
+                    &copy; 2026 ispice majesty Inc.
+                    All Rights Reserved.
+
+                </p>
+
+
+            </div>
+
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- =====================================================
+         APP SCRIPTS
+    ====================================================== -->
+
+    <script
+        src="{{ url_for('root_asset', filename='scene3d.js') }}?v=responsive-burger-3">
+    </script>
+
+
+    <script
+        src="{{ url_for('root_asset', filename='main.js') }}">
+    </script>
+
+
+    <!-- Initialize Lucide Icons -->
+
+    <script>
+        if (typeof lucide !== "undefined") {
+            lucide.createIcons();
+        }
+    </script>
+
+</body>
+
+</html>

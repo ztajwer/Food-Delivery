@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart & Checkout | ispice majesty</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dark-theme theme-charcoal">
+
+    <!-- SECTION 1: HEADER NAVBAR (Identical to Home Page) -->
+    <header class="navbar scrolled" id="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="brand-logo">
+                <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="ispice majesty Logo" class="brand-logo-img">
+            </a>
+
+            <nav class="nav-menu" id="navMenu">
+                <a href="{{ url_for('home') }}" class="nav-link ">Exhibition</a>
+                <a href="{{ url_for('customer_restaurants') }}" class="nav-link ">Restaurants</a>
+                <a href="{{ url_for('public_menu') }}" class="nav-link ">Gourmet Menu</a>
+                <a href="{{ url_for('about') }}" class="nav-link ">About</a>
+                <a href="{{ url_for('faq') }}" class="nav-link ">Help / FAQ</a>
+                <a href="{{ url_for('contact') }}" class="nav-link ">Contact</a>
+                <details class="nav-dropdown">
+                    <summary class="nav-link">My pages <i data-lucide="chevron-down"></i></summary>
+                    <div class="nav-dropdown-menu">
+                        <a href="{{ url_for('customer_dashboard') }}"><i data-lucide="layout-dashboard"></i>Dashboard</a><a href="{{ url_for('customer_restaurants') }}"><i data-lucide="store"></i>Restaurants</a><a href="{{ url_for('public_menu') }}"><i data-lucide="utensils"></i>Gourmet menu</a><a href="{{ url_for('customer_restaurant_details') }}"><i data-lucide="map-pin"></i>Venue details</a><a href="{{ url_for('customer_orders') }}"><i data-lucide="receipt"></i>My orders</a><a href="{{ url_for('customer_tracking') }}"><i data-lucide="navigation"></i>Track order</a><a href="{{ url_for('customer_profile') }}"><i data-lucide="user"></i>My profile</a><a href="{{ url_for('customer_feedback') }}"><i data-lucide="message-square-heart"></i>Feedback</a><a href="{{ url_for('customer_cart') }}"><i data-lucide="shopping-bag"></i>Cart</a><a href="{{ url_for('public_reserve') }}"><i data-lucide="calendar"></i>Reserve a table</a><a href="{{ url_for('public_track') }}"><i data-lucide="map"></i>Live GPS</a><a href="{{ url_for('public_privacy') }}"><i data-lucide="shield"></i>Privacy & terms</a>
+                    </div>
+                </details>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Theme (Dark / Light)">
+                    <i data-lucide="sun" class="sun-icon"></i>
+                    <i data-lucide="moon" class="moon-icon"></i>
+                </button>
+
+                <a href="{{ url_for('login') }}" class="icon-btn" title="Customer sign in">
+                    <i data-lucide="shield-check"></i>
+                    <span class="btn-text">Sign in</span>
+                </a>
+
+                <a href="{{ url_for('public_reserve') }}" class="icon-btn" title="Book a Table">
+                    <i data-lucide="calendar"></i>
+                    <span class="btn-text">Reserve</span>
+                </a>
+
+                <a href="{{ url_for('customer_cart') }}" class="cart-trigger-btn" id="cartToggleBtn" title="Shopping Cart">
+                    <i data-lucide="shopping-bag"></i>
+                    <span class="cart-badge" id="cartCount">1</span>
+                </a>
+
+                <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION 2: PAGE HERO BANNER -->
+    <div class="page-header-banner">
+        <span class="sub-heading"><i data-lucide="sparkles"></i> CHECKOUT PROCESS</span>
+        <h1 class="page-title">YOUR CULINARY <span class='gradient-text'>BASKET</span></h1>
+        <p class="page-subtitle">Review selected creations and confirm delivery destination.</p>
+    </div>
+
+    <!-- SECTION 3: MAIN INTERACTIVE WORKSPACE -->
+    <main class="container" style="padding-bottom: 4rem;">
+        
+        <div style="display: grid; grid-template-columns: 1.8fr 1.2fr; gap: 2.5rem;">
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                <div style="background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 2rem; backdrop-filter: blur(20px);">
+                    <h3 style="margin-bottom: 1.25rem; font-family: var(--font-heading);"><i data-lucide="shopping-bag" style="color: var(--primary);"></i> Items in Basket</h3>
+                    <div id="cartLineItems" style="display: contents;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--glass-border);">
+                        <div>
+                            <h4 style="font-size: 1.1rem;">ispice majesty Prime Wagyu Truffle</h4>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">A5 Wagyu, Truffle Aioli, Aged Cheddar</span>
+                        </div>
+                        <span style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: var(--primary);">$28.50</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0;">
+                        <div>
+                            <h4 style="font-size: 1.1rem;">Smoked Ember Old Fashioned</h4>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">Oak Smoked Bourbon Cocktail</span>
+                        </div>
+                        <span style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: var(--primary);">$18.00</span>
+                    </div>
+                    </div>
+                </div>
+
+                <div style="background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 2rem; backdrop-filter: blur(20px);">
+                    <h3 style="margin-bottom: 1.25rem; font-family: var(--font-heading);"><i data-lucide="map-pin" style="color: var(--primary);"></i> Delivery Address</h3>
+                    <div class="form-group">
+                        <label>Street Address</label>
+                        <input id="deliveryAddress" name="delivery_address" type="text" value="{{ customer.address if customer and customer.address else '' }}" placeholder="Enter your delivery address" required style="width:100%; padding:0.85rem; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:10px; color:#FFF;">
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border-light); border-radius: var(--radius-lg); padding: 2.25rem; height: fit-content; backdrop-filter: blur(25px);">
+                <h3 style="margin-bottom: 1.5rem; font-family: var(--font-heading);">Payment Summary</h3>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.85rem; color: var(--text-muted); font-size: 0.9rem;">
+                    <span>Subtotal</span>
+                    <span style="color: var(--text-main); font-weight: 700;">$46.50</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.85rem; color: var(--text-muted); font-size: 0.9rem;">
+                    <span>Thermal Packaging</span>
+                    <span style="color: var(--accent-green); font-weight: 700;">COMPLIMENTARY</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">
+                    <span>Delivery Fee</span>
+                    <span style="color: var(--text-main); font-weight: 700;">$3.50</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding-top: 1.25rem; border-top: 1px solid var(--glass-border); font-size: 1.35rem; font-weight: 800; font-family: var(--font-heading); margin-bottom: 2rem;">
+                    <span>Total Amount</span>
+                    <span class="gradient-text">$50.00</span>
+                </div>
+                <button class="btn btn-primary btn-glow btn-lg" id="checkoutBtn" style="width: 100%; justify-content: center;">
+                    <span>Confirm & Pay $50.00</span>
+                    <i data-lucide="arrow-right"></i>
+                </button>
+            </div>
+        </div>
+        
+    </main>
+
+    <!-- SECTION 4: FEATURE HIGHLIGHTS & METRICS GRID -->
+    <section class="container" style="padding-bottom: 5rem;">
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; text-align: center;">
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="shield" style="color: var(--primary); width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">Encrypted Checkout</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Secure payment processing.</p>
+            </div>
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="truck" style="color: var(--accent-green); width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">Thermal Guarantee</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Hot items arrive steaming.</p>
+            </div>
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="clock" style="color: #0088FF; width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">Live Tracking</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Real-time GPS turn-by-turn map.</p>
+            </div>
+        </div>
+        
+    </section>
+
+    <!-- SECTION 5: SITE FOOTER (Identical to Home Page) -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <a href="{{ url_for('home') }}" class="brand-logo">
+                        <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="ispice majesty Logo" class="brand-logo-img">
+                    </a>
+                    <p>Interactive digital culinary exhibition & 3D food showcase.</p>
+                </div>
+
+                <div class="footer-links-group">
+                    <div class="footer-col">
+                        <h4>Navigation</h4>
+                        <ul>
+                            <li><a href="../customer/restaurants.html">Restaurants</a></li>
+                            <li><a href="../public/menu.html">Gourmet Menu</a></li>
+                            <li><a href="../public/about.html">About Us</a></li>
+                            <li><a href="../public/faq.html">Help / FAQ</a></li>
+                            <li><a href="../public/reserve.html">Reserve Table</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>Your workspace</h4>
+                        <ul>
+                            <li><a href="../customer/dashboard.html">Customer Portal</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>Location</h4>
+                        <ul class="contact-info">
+                            <li>845 Grand Avenue, Culinary District</li>
+                            <li>+1 (800) 555-ISPICE</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 ispice majesty Inc. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        
+        const savedCart = JSON.parse(localStorage.getItem('ispice-cart') || '[]');
+        const cartLineItems = document.getElementById('cartLineItems');
+        if (Array.isArray(savedCart) && savedCart.length && cartLineItems) {
+            cartLineItems.innerHTML = savedCart.map(item => `<div style="display:flex;justify-content:space-between;align-items:center;padding:1rem 0;border-bottom:1px solid var(--glass-border);gap:1rem"><div><h4 style="font-size:1.1rem">${item.qty} × ${item.name}</h4><span style="font-size:.85rem;color:var(--text-muted)">${item.desc || 'Chef selection'}</span></div><span style="font-family:var(--font-heading);font-size:1.25rem;font-weight:800;color:var(--primary)">$${((Number(item.price) || 0) * item.qty).toFixed(2)}</span></div>`).join('');
+        }
+        document.getElementById('checkoutBtn').addEventListener('click', async () => {
+            const address = document.getElementById('deliveryAddress').value.trim();
+            const cart = Array.isArray(savedCart) && savedCart.length ? savedCart : [
+                {name: 'Prime Wagyu Truffle', qty: 1, price: 28.50},
+                {name: 'Smoked Ember Old Fashioned', qty: 1, price: 18.00}
+            ];
+            if (!address) { alert('Please enter a delivery address.'); return; }
+            const subtotal = cart.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.qty) || 1), 0);
+            const total = subtotal + 3.50;
+            const payload = new URLSearchParams({
+                csrf_token: '{{ csrf_token() }}',
+                order_details: cart.map(item => `${item.qty || 1}x ${item.name}`).join(', '),
+                total_amount: total.toFixed(2),
+                delivery_address: address
+            });
+            const response = await fetch('{{ url_for("create_order") }}', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:payload});
+            const result = await response.json();
+            if (!result.ok) { alert(result.error || 'Unable to place order.'); return; }
+            localStorage.removeItem('ispice-cart');
+            window.location.href = "{{ url_for('customer_tracking') }}";
+        });
+        
+    </script>
+</body>
+</html>

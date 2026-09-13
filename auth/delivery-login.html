@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Delivery partner sign in | ispice majesty</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dark-theme auth-page admin-auth-page">
+    <main class="admin-auth-shell"><div class="admin-auth-card">
+        <div class="admin-auth-mark"><i data-lucide="bike"></i></div>
+        <span class="auth-eyebrow">Delivery partner workspace</span>
+        <h1>Move every order<br><span class="gradient-text">with care.</span></h1>
+        <p class="auth-intro">Sign in to accept deliveries, update order status, and share your live location.</p>
+        {% if request.args.get('registered') %}<p class="auth-status is-visible" aria-live="polite">Account created. You can sign in now.</p>{% endif %}
+        <form class="auth-form" method="POST" action="{{ url_for('delivery_login') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="form-group"><label for="deliveryEmail"><i data-lucide="mail"></i> Email address</label><input id="deliveryEmail" name="email" type="email" autocomplete="email" placeholder="driver@example.com" required></div>
+            <div class="form-group"><label for="deliveryPassword"><i data-lucide="key-round"></i> Password</label><input id="deliveryPassword" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" minlength="6" required></div>
+            {% if error %}<p class="auth-status is-visible is-error" aria-live="polite">{{ error }}</p>{% endif %}
+            <button type="submit" class="btn btn-primary btn-glow auth-submit">Open delivery portal <i data-lucide="arrow-right"></i></button>
+        </form>
+        <div class="auth-divider"><span>New delivery partner?</span></div>
+        <a href="{{ url_for('delivery_register') }}" class="btn btn-outline auth-secondary-action">Create partner account</a>
+        <a href="{{ url_for('login') }}" class="auth-back-link"><i data-lucide="arrow-left"></i> Customer sign in</a>
+    </div></main>
+    <script src="https://unpkg.com/lucide@latest"></script><script>if (typeof lucide !== 'undefined') lucide.createIcons();</script>
+</body>
+</html>

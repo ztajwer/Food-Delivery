@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile Settings | ispice majesty</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dark-theme theme-charcoal">
+
+    <!-- SECTION 1: HEADER NAVBAR (Identical to Home Page) -->
+    <header class="navbar scrolled" id="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="brand-logo">
+                <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="ispice majesty Logo" class="brand-logo-img">
+            </a>
+
+            <nav class="nav-menu" id="navMenu">
+                <a href="{{ url_for('home') }}" class="nav-link ">Exhibition</a>
+                <a href="{{ url_for('customer_restaurants') }}" class="nav-link ">Restaurants</a>
+                <a href="{{ url_for('public_menu') }}" class="nav-link ">Gourmet Menu</a>
+                <a href="{{ url_for('about') }}" class="nav-link ">About</a>
+                <a href="{{ url_for('faq') }}" class="nav-link ">Help / FAQ</a>
+                <a href="{{ url_for('contact') }}" class="nav-link ">Contact</a>
+                <details class="nav-dropdown"><summary class="nav-link">My pages <i data-lucide="chevron-down"></i></summary><div class="nav-dropdown-menu"><a href="dashboard.html"><i data-lucide="layout-dashboard"></i>Dashboard</a><a href="restaurants.html"><i data-lucide="store"></i>Restaurants</a><a href="../public/menu.html"><i data-lucide="utensils"></i>Gourmet menu</a><a href="restaurant_details.html"><i data-lucide="map-pin"></i>Venue details</a><a href="orders.html"><i data-lucide="receipt"></i>My orders</a><a href="tracking.html"><i data-lucide="navigation"></i>Track order</a><a href="profile.html"><i data-lucide="user"></i>My profile</a><a href="feedback.html"><i data-lucide="message-square-heart"></i>Feedback</a><a href="cart.html"><i data-lucide="shopping-bag"></i>Cart</a><a href="../public/reserve.html"><i data-lucide="calendar"></i>Reserve a table</a><a href="../public/track.html"><i data-lucide="map"></i>Live GPS</a><a href="../public/privacy.html"><i data-lucide="shield"></i>Privacy & terms</a></div></details>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Theme (Dark / Light)">
+                    <i data-lucide="sun" class="sun-icon"></i>
+                    <i data-lucide="moon" class="moon-icon"></i>
+                </button>
+
+                <a href="{{ url_for('login') }}" class="icon-btn" title="Customer sign in">
+                    <i data-lucide="shield-check"></i>
+                    <span class="btn-text">Sign in</span>
+                </a>
+
+                <a href="{{ url_for('public_reserve') }}" class="icon-btn" title="Book a Table">
+                    <i data-lucide="calendar"></i>
+                    <span class="btn-text">Reserve</span>
+                </a>
+
+                <a href="{{ url_for('customer_cart') }}" class="cart-trigger-btn" id="cartToggleBtn" title="Shopping Cart">
+                    <i data-lucide="shopping-bag"></i>
+                    <span class="cart-badge" id="cartCount">1</span>
+                </a>
+
+                <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION 2: PAGE HERO BANNER -->
+    <div class="page-header-banner">
+        <span class="sub-heading"><i data-lucide="sparkles"></i> PROFILE PREFERENCES</span>
+        <h1 class="page-title">ACCOUNT <span class='gradient-text'>SETTINGS</span></h1>
+        <p class="page-subtitle">Manage personal info, saved delivery address, and dietary preferences.</p>
+    </div>
+
+    <!-- SECTION 3: MAIN INTERACTIVE WORKSPACE -->
+    <main class="container" style="padding-bottom: 4rem;">
+        
+        <div style="background: var(--bg-card); border: 1px solid var(--glass-border-light); border-radius: var(--radius-lg); padding: 2.75rem 2.5rem; max-width: 680px; margin: 0 auto; backdrop-filter: blur(25px);">
+            <form id="profileForm" method="POST" action="{{ url_for('customer_profile') }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                    <div class="form-group">
+                        <label><i data-lucide="user"></i> Full Name</label>
+                        <input type="text" name="name" value="{{ user.user_name if user else '' }}" required style="width:100%; padding:0.85rem; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:10px; color:#FFF;">
+                    </div>
+                    <div class="form-group">
+                        <label><i data-lucide="mail"></i> Email Address</label>
+                        <input type="email" name="email" value="{{ user.user_email if user else '' }}" required style="width:100%; padding:0.85rem; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:10px; color:#FFF;">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                    <div class="form-group">
+                        <label><i data-lucide="phone"></i> Phone Number</label>
+                        <input type="text" name="phone" value="{{ user.phone if user else '' }}" required style="width:100%; padding:0.85rem; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:10px; color:#FFF;">
+                    </div>
+                    <div class="form-group">
+                        <label><i data-lucide="utensils"></i> Dietary Preferences</label>
+                        <input type="text" name="preferences" value="{{ user.preferences if user and user.preferences else '' }}" placeholder="e.g. Vegan, Gluten-free" style="width:100%; padding:0.85rem; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:10px; color:#FFF;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i data-lucide="map-pin"></i> Default Delivery Address</label>
+                    <input type="text" name="address" value="{{ user.address if user and user.address else '' }}" required style="width:100%; padding:0.85rem; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:10px; color:#FFF;">
+                </div>
+                <button type="submit" class="btn btn-primary btn-glow" style="width:100%; margin-top: 1rem; justify-content: center;">
+                    <span>Save Profile Changes</span>
+                    <i data-lucide="save"></i>
+                </button>
+            </form>
+        </div>
+        
+    </main>
+
+    <!-- SECTION 4: FEATURE HIGHLIGHTS & METRICS GRID -->
+    <section class="container" style="padding-bottom: 5rem;">
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; text-align: center;">
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="shield" style="color: var(--primary); width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">Data Security</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Encrypted profile credentials.</p>
+            </div>
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="bell" style="color: var(--accent-green); width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">SMS Notifications</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Real-time dispatch text alerts.</p>
+            </div>
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="gift" style="color: #0088FF; width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="font-size: 0.8rem; color: var(--text-muted);">VIP Tier Member</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Complimentary delivery perk.</p>
+            </div>
+        </div>
+        
+    </section>
+
+    <!-- SECTION 5: SITE FOOTER (Identical to Home Page) -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <a href="{{ url_for('home') }}" class="brand-logo">
+                        <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="ispice majesty Logo" class="brand-logo-img">
+                    </a>
+                    <p>Interactive digital culinary exhibition & 3D food showcase.</p>
+                </div>
+
+                <div class="footer-links-group">
+                    <div class="footer-col">
+                        <h4>Navigation</h4>
+                        <ul>
+                            <li><a href="../customer/restaurants.html">Restaurants</a></li>
+                            <li><a href="../public/menu.html">Gourmet Menu</a></li>
+                            <li><a href="../public/about.html">About Us</a></li>
+                            <li><a href="../public/faq.html">Help / FAQ</a></li>
+                            <li><a href="../public/reserve.html">Reserve Table</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>Your workspace</h4>
+                        <ul>
+                            <li><a href="../customer/dashboard.html">Customer Portal</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>Location</h4>
+                        <ul class="contact-info">
+                            <li>845 Grand Avenue, Culinary District</li>
+                            <li>+1 (800) 555-ISPICE</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 ispice majesty Inc. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

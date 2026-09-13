@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Delivery Requests | ispice majesty</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dark-theme theme-charcoal">
+
+    <!-- SECTION 1: HEADER NAVBAR (Identical to Home Page) -->
+    <header class="navbar scrolled" id="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="brand-logo">
+                <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="ispice majesty Logo" class="brand-logo-img">
+            </a>
+
+            <nav class="nav-menu" id="navMenu">
+                <a href="{{ url_for('delivery_dashboard') }}" class="nav-link ">Dashboard</a>
+                <a href="{{ url_for('delivery_requests') }}" class="nav-link ">Requests</a>
+                <a href="{{ url_for('delivery_history') }}" class="nav-link ">History</a>
+                <a href="{{ url_for('delivery_profile') }}" class="nav-link ">Profile</a>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Theme (Dark / Light)">
+                    <i data-lucide="sun" class="sun-icon"></i>
+                    <i data-lucide="moon" class="moon-icon"></i>
+                </button>
+
+                <a href="{{ url_for('logout') }}" class="icon-btn" title="Sign out">
+                    <i data-lucide="shield-check"></i>
+                    <span class="btn-text">Sign out</span>
+                </a>
+
+                <a href="{{ url_for('public_reserve') }}" class="icon-btn" title="Book a Table">
+                    <i data-lucide="calendar"></i>
+                    <span class="btn-text">Reserve</span>
+                </a>
+
+                <a href="{{ url_for('delivery_requests') }}" class="cart-trigger-btn" id="cartToggleBtn" title="Delivery requests">
+                    <i data-lucide="bell"></i>
+                </a>
+
+                <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION 2: PAGE HERO BANNER -->
+    <div class="page-header-banner">
+        <span class="sub-heading"><i data-lucide="sparkles"></i> DISPATCH REQUESTS</span>
+        <h1 class="page-title">AVAILABLE <span class='gradient-text'>DELIVERY ORDERS</span></h1>
+        <p class="page-subtitle">Select nearby dispatch orders to accept and deliver.</p>
+    </div>
+
+    <!-- SECTION 3: MAIN INTERACTIVE WORKSPACE -->
+    <main class="container" style="padding-bottom: 4rem;">
+        
+        <div style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 850px; margin: 0 auto;">
+            {% if requests %}
+                {% for delivery_request in requests %}
+                <div style="background: var(--bg-card); border: 1px solid var(--glass-border-light); border-radius: var(--radius-lg); padding: 2rem; display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; backdrop-filter: blur(25px);">
+                    <div>
+                        <span class="status-badge status-dispatched"><i data-lucide="package"></i> {{ delivery_request.status|upper }}</span>
+                        <h3 style="margin-top: 0.4rem; font-size: 1.35rem;">Order #{{ delivery_request.order_id }} — {{ delivery_request.restaurant_name or 'ispice majesty' }}</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.2rem;">Pickup: {{ delivery_request.pickup_address or 'Restaurant kitchen' }} → Dropoff: {{ delivery_request.delivery_address or delivery_request.customer_address or 'Address not provided' }}</p>
+                        <div style="display: flex; gap: 1.5rem; margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-dim);">
+                            <span>Customer: <strong>{{ delivery_request.customer_name }}</strong></span>
+                            <span>Total: <strong>${{ '%.2f'|format(delivery_request.total_amount or 0) }}</strong></span>
+                        </div>
+                    </div>
+                    <div style="text-align: right; white-space: nowrap;">
+                        <span style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; color: var(--primary);">${{ '%.2f'|format([3.50, (delivery_request.total_amount or 0) * 0.15]|max) }}</span>
+                        <form method="POST" action="{{ url_for('accept_delivery_request', order_id=delivery_request.order_id) }}" style="margin-top: 0.75rem;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-primary btn-sm btn-glow"><i data-lucide="check-circle"></i> Accept Request</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div style="background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 3rem; text-align:center; color:var(--text-muted);">
+                    <i data-lucide="inbox" style="width:42px;height:42px;color:var(--primary);margin-bottom:1rem;"></i>
+                    <h3>No delivery requests right now</h3>
+                    <p>New customer orders will appear here after they are placed.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+    </main>
+
+    <!-- SECTION 4: FEATURE HIGHLIGHTS & METRICS GRID -->
+    <section class="container" style="padding-bottom: 5rem;">
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; text-align: center;">
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="navigation" style="color: var(--primary); width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">Dijkstra Routing</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Shortest path calculation.</p>
+            </div>
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="dollar-sign" style="color: var(--accent-green); width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">Instant Payout</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Daily direct bank deposit.</p>
+            </div>
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="award" style="color: #0088FF; width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">Peak Bonus</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">+$3.50 per dinner peak order.</p>
+            </div>
+        </div>
+        
+    </section>
+
+    <!-- SECTION 5: SITE FOOTER (Identical to Home Page) -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <a href="{{ url_for('home') }}" class="brand-logo">
+                        <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="ispice majesty Logo" class="brand-logo-img">
+                    </a>
+                    <p>Interactive digital culinary exhibition & 3D food showcase.</p>
+                </div>
+
+                <div class="footer-links-group">
+                    <div class="footer-col">
+                        <h4>Navigation</h4>
+                        <ul>
+                            <li><a href="../customer/restaurants.html">Restaurants</a></li>
+                            <li><a href="../public/menu.html">Gourmet Menu</a></li>
+                            <li><a href="../public/about.html">About Us</a></li>
+                            <li><a href="../public/faq.html">Help / FAQ</a></li>
+                            <li><a href="../public/reserve.html">Reserve Table</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>System Portals</h4>
+                        <ul>
+                            <li><a href="{{ url_for('delivery_dashboard') }}">Delivery Partner Dashboard</a></li>
+                            <li><a href="../delivery/dashboard.html">Delivery Fleet App</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>Location</h4>
+                        <ul class="contact-info">
+                            <li>845 Grand Avenue, Culinary District</li>
+                            <li>+1 (800) 555-ISPICE</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 ispice majesty Inc. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        
+    </script>
+</body>
+</html>

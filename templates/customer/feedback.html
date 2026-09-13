@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback & Ratings | ispice majesty</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dark-theme theme-charcoal">
+
+    <!-- SECTION 1: HEADER NAVBAR (Identical to Home Page) -->
+    <header class="navbar scrolled" id="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="brand-logo">
+                <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="ispice majesty Logo" class="brand-logo-img">
+            </a>
+
+            <nav class="nav-menu" id="navMenu">
+                <a href="{{ url_for('home') }}" class="nav-link ">Exhibition</a>
+                <a href="{{ url_for('customer_restaurants') }}" class="nav-link ">Restaurants</a>
+                <a href="{{ url_for('public_menu') }}" class="nav-link ">Gourmet Menu</a>
+                <a href="{{ url_for('about') }}" class="nav-link ">About</a>
+                <a href="{{ url_for('faq') }}" class="nav-link ">Help / FAQ</a>
+                <a href="{{ url_for('contact') }}" class="nav-link ">Contact</a>
+                <details class="nav-dropdown"><summary class="nav-link">My pages <i data-lucide="chevron-down"></i></summary><div class="nav-dropdown-menu"><a href="dashboard.html"><i data-lucide="layout-dashboard"></i>Dashboard</a><a href="restaurants.html"><i data-lucide="store"></i>Restaurants</a><a href="../public/menu.html"><i data-lucide="utensils"></i>Gourmet menu</a><a href="restaurant_details.html"><i data-lucide="map-pin"></i>Venue details</a><a href="orders.html"><i data-lucide="receipt"></i>My orders</a><a href="tracking.html"><i data-lucide="navigation"></i>Track order</a><a href="profile.html"><i data-lucide="user"></i>My profile</a><a href="feedback.html"><i data-lucide="message-square-heart"></i>Feedback</a><a href="cart.html"><i data-lucide="shopping-bag"></i>Cart</a><a href="../public/reserve.html"><i data-lucide="calendar"></i>Reserve a table</a><a href="../public/track.html"><i data-lucide="map"></i>Live GPS</a><a href="../public/privacy.html"><i data-lucide="shield"></i>Privacy & terms</a></div></details>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Theme (Dark / Light)">
+                    <i data-lucide="sun" class="sun-icon"></i>
+                    <i data-lucide="moon" class="moon-icon"></i>
+                </button>
+
+                <a href="{{ url_for('login') }}" class="icon-btn" title="Customer sign in">
+                    <i data-lucide="shield-check"></i>
+                    <span class="btn-text">Sign in</span>
+                </a>
+
+                <a href="{{ url_for('public_reserve') }}" class="icon-btn" title="Book a Table">
+                    <i data-lucide="calendar"></i>
+                    <span class="btn-text">Reserve</span>
+                </a>
+
+                <a href="{{ url_for('customer_cart') }}" class="cart-trigger-btn" id="cartToggleBtn" title="Shopping Cart">
+                    <i data-lucide="shopping-bag"></i>
+                    <span class="cart-badge" id="cartCount">1</span>
+                </a>
+
+                <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION 2: PAGE HERO BANNER -->
+    <div class="page-header-banner">
+        <span class="sub-heading"><i data-lucide="sparkles"></i> GUEST REVIEWS</span>
+        <h1 class="page-title">ORDER <span class='gradient-text'>FEEDBACK & RATINGS</span></h1>
+        <p class="page-subtitle">Rate your culinary dish quality and fleet driver delivery speed.</p>
+    </div>
+
+    <!-- SECTION 3: MAIN INTERACTIVE WORKSPACE -->
+    <main class="container" style="padding-bottom: 4rem;">
+        
+        <div style="background: var(--bg-card); border: 1px solid var(--glass-border-light); border-radius: var(--radius-lg); padding: 2.75rem 2.5rem; max-width: 600px; margin: 0 auto; backdrop-filter: blur(25px);">
+            <form id="fbForm" method="POST" action="{{ url_for('customer_feedback') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="form-group">
+                    <label><i data-lucide="package"></i> Select Order</label>
+                    <select name="order_id" required style="width:100%; padding:0.85rem; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:10px; color:#FFF;">
+                        {% for order in reviewable_orders %}{% if not order.feedback_id %}<option value="{{ order.order_id }}">Order #{{ order.order_id }} — {{ order.order_details }} (${{ '%.2f'|format(order.total_amount or 0) }})</option>{% endif %}{% endfor %}
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                    <div class="form-group">
+                        <label><i data-lucide="star"></i> Culinary Dish Rating</label>
+                        <select name="restaurant_rating" required style="width:100%; padding:0.85rem; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:10px; color:#FFF;">
+                            <option value="5">5 Stars — Extraordinary ★★★★★</option>
+                            <option value="4">4 Stars — Excellent ★★★★☆</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i data-lucide="truck"></i> Delivery Speed Rating</label>
+                        <select name="delivery_rating" required style="width:100%; padding:0.85rem; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:10px; color:#FFF;">
+                            <option value="5">5 Stars — Ultra Fast ★★★★★</option>
+                            <option value="4">4 Stars — On Time ★★★★☆</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i data-lucide="message-square"></i> Review Comments</label>
+                    <textarea name="comments" rows="4" placeholder="Share your culinary thoughts..." required style="width:100%; padding:0.85rem; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:10px; color:#FFF;"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-glow" style="width:100%; margin-top: 1rem; justify-content: center;" {% if not reviewable_orders %}disabled{% endif %}>
+                    <span>Publish Review</span>
+                    <i data-lucide="send"></i>
+                </button>
+            </form>
+        </div>
+        
+    </main>
+
+    <!-- SECTION 4: FEATURE HIGHLIGHTS & METRICS GRID -->
+    <section class="container" style="padding-bottom: 5rem;">
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; text-align: center;">
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="star" style="color: #FFB800; width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">4.95 Rating Score</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Verified guest satisfaction.</p>
+            </div>
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="award" style="color: var(--accent-green); width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">50 Concierge Pts</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Earned per published review.</p>
+            </div>
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="check-circle" style="color: #0088FF; width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">100% Verified</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Authentic diner feedback.</p>
+            </div>
+        </div>
+        
+    </section>
+
+    <!-- SECTION 5: SITE FOOTER (Identical to Home Page) -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <a href="{{ url_for('home') }}" class="brand-logo">
+                        <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="ispice majesty Logo" class="brand-logo-img">
+                    </a>
+                    <p>Interactive digital culinary exhibition & 3D food showcase.</p>
+                </div>
+
+                <div class="footer-links-group">
+                    <div class="footer-col">
+                        <h4>Navigation</h4>
+                        <ul>
+                            <li><a href="../customer/restaurants.html">Restaurants</a></li>
+                            <li><a href="../public/menu.html">Gourmet Menu</a></li>
+                            <li><a href="../public/about.html">About Us</a></li>
+                            <li><a href="../public/faq.html">Help / FAQ</a></li>
+                            <li><a href="../public/reserve.html">Reserve Table</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>Your workspace</h4>
+                        <ul>
+                            <li><a href="../customer/dashboard.html">Customer Portal</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>Location</h4>
+                        <ul class="contact-info">
+                            <li>845 Grand Avenue, Culinary District</li>
+                            <li>+1 (800) 555-ISPICE</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 ispice majesty Inc. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        
+        document.getElementById('fbForm').addEventListener('submit', () => {
+            localStorage.removeItem('ispice-feedback-draft');
+        });
+        
+    </script>
+</body>
+</html>

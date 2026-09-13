@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Partner Profile | ispice majesty</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dark-theme theme-charcoal">
+
+    <!-- SECTION 1: HEADER NAVBAR (Identical to Home Page) -->
+    <header class="navbar scrolled" id="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="brand-logo">
+                <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="ispice majesty Logo" class="brand-logo-img">
+            </a>
+
+            <nav class="nav-menu" id="navMenu">
+                <a href="{{ url_for('delivery_dashboard') }}" class="nav-link ">Dashboard</a>
+                <a href="{{ url_for('delivery_requests') }}" class="nav-link ">Requests</a>
+                <a href="{{ url_for('delivery_history') }}" class="nav-link ">History</a>
+                <a href="{{ url_for('delivery_profile') }}" class="nav-link ">Profile</a>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Theme (Dark / Light)">
+                    <i data-lucide="sun" class="sun-icon"></i>
+                    <i data-lucide="moon" class="moon-icon"></i>
+                </button>
+
+                <a href="{{ url_for('logout') }}" class="icon-btn" title="Sign out">
+                    <i data-lucide="shield-check"></i>
+                    <span class="btn-text">Sign out</span>
+                </a>
+
+                <a href="{{ url_for('public_reserve') }}" class="icon-btn" title="Book a Table">
+                    <i data-lucide="calendar"></i>
+                    <span class="btn-text">Reserve</span>
+                </a>
+
+                <a href="{{ url_for('delivery_requests') }}" class="cart-trigger-btn" id="cartToggleBtn" title="Delivery requests">
+                    <i data-lucide="bell"></i>
+                </a>
+
+                <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION 2: PAGE HERO BANNER -->
+    <div class="page-header-banner">
+        <span class="sub-heading"><i data-lucide="sparkles"></i> PARTNER STATUS</span>
+        <h1 class="page-title">DRIVER PARTNER <span class='gradient-text'>PROFILE</span></h1>
+        <p class="page-subtitle">Vehicle details, driver rating score, and fleet status.</p>
+    </div>
+
+    <!-- SECTION 3: MAIN INTERACTIVE WORKSPACE -->
+    <main class="container" style="padding-bottom: 4rem;">
+        
+        <div style="background: var(--bg-card); border: 1px solid var(--glass-border-light); border-radius: var(--radius-lg); padding: 2.5rem; max-width: 650px; margin: 0 auto; backdrop-filter: blur(25px);">
+            <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem;">
+                <div style="width: 70px; height: 70px; border-radius: 50%; background: var(--primary); color: #000; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800;">{{ (partner.user_name or 'DP')[:2]|upper }}</div>
+                <div>
+                    <h2 style="font-family: var(--font-heading);">{{ partner.user_name }}</h2>
+                    <span style="color: var(--primary); font-weight: 700;">Partner Driver Score: {{ '%.2f'|format(partner.rating or 0) }} / 5.0 ★</span>
+                </div>
+            </div>
+            <form method="POST" action="{{ url_for('delivery_profile') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="form-group"><label for="partnerName">Full name</label><input id="partnerName" type="text" name="name" value="{{ partner.user_name }}" required style="width:100%;padding:.85rem;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:10px;color:#FFF;"></div>
+                <div class="form-group"><label for="partnerEmail">Email</label><input id="partnerEmail" type="email" name="email" value="{{ partner.user_email }}" required style="width:100%;padding:.85rem;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:10px;color:#FFF;"></div>
+                <div class="form-group"><label for="partnerPhone">Phone</label><input id="partnerPhone" type="text" name="phone" value="{{ partner.phone }}" required style="width:100%;padding:.85rem;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:10px;color:#FFF;"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;"><div class="form-group"><label for="vehicleType">Vehicle type</label><input id="vehicleType" type="text" name="vehicle_type" value="{{ partner.vehicle_type }}" required style="width:100%;padding:.85rem;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:10px;color:#FFF;"></div><div class="form-group"><label for="licenseNumber">License / ID</label><input id="licenseNumber" type="text" name="license_number" value="{{ partner.license_number or '' }}" style="width:100%;padding:.85rem;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:10px;color:#FFF;"></div></div>
+                <div class="form-group"><label for="availabilityStatus">Availability status</label><select id="availabilityStatus" name="availability_status" style="width:100%;padding:.85rem;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:10px;color:#FFF;" {% if partner.availability_status == 'Busy' %}disabled{% endif %}><option {% if partner.availability_status == 'Available' %}selected{% endif %}>Available</option><option {% if partner.availability_status == 'Offline' %}selected{% endif %}>Offline</option>{% if partner.availability_status == 'Busy' %}<option selected>Busy</option>{% endif %}</select>{% if partner.availability_status == 'Busy' %}<small style="color:var(--text-muted);">Availability stays Busy while an order is active.</small>{% endif %}</div>
+                <button type="submit" class="btn btn-primary btn-glow" style="width:100%;justify-content:center;">Save partner profile <i data-lucide="save"></i></button>
+            </form>
+        </div>
+        
+    </main>
+
+    <!-- SECTION 4: FEATURE HIGHLIGHTS & METRICS GRID -->
+    <section class="container" style="padding-bottom: 5rem;">
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; text-align: center;">
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="shield-check" style="color: var(--primary); width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">Licensed Fleet</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Active driver verification.</p>
+            </div>
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="zap" style="color: var(--accent-green); width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">Zero Emissions</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">100% Electric EV fleet vehicle.</p>
+            </div>
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 16px;">
+                <i data-lucide="star" style="color: #0088FF; width: 28px; height: 28px; margin-bottom: 0.5rem;"></i>
+                <h4 style="margin-bottom: 0.2rem;">Top Rated</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Tier 1 Fleet Partner.</p>
+            </div>
+        </div>
+        
+    </section>
+
+    <!-- SECTION 5: SITE FOOTER (Identical to Home Page) -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <a href="{{ url_for('home') }}" class="brand-logo">
+                        <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="ispice majesty Logo" class="brand-logo-img">
+                    </a>
+                    <p>Interactive digital culinary exhibition & 3D food showcase.</p>
+                </div>
+
+                <div class="footer-links-group">
+                    <div class="footer-col">
+                        <h4>Navigation</h4>
+                        <ul>
+                            <li><a href="../customer/restaurants.html">Restaurants</a></li>
+                            <li><a href="../public/menu.html">Gourmet Menu</a></li>
+                            <li><a href="../public/about.html">About Us</a></li>
+                            <li><a href="../public/faq.html">Help / FAQ</a></li>
+                            <li><a href="../public/reserve.html">Reserve Table</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>System Portals</h4>
+                        <ul>
+                            <li><a href="{{ url_for('delivery_dashboard') }}">Delivery Partner Dashboard</a></li>
+                            <li><a href="../delivery/dashboard.html">Delivery Fleet App</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>Location</h4>
+                        <ul class="contact-info">
+                            <li>845 Grand Avenue, Culinary District</li>
+                            <li>+1 (800) 555-ISPICE</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 ispice majesty Inc. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Delivery Tracking | AURA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dark-theme">
+
+    <header class="navbar scrolled" id="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="brand-logo"><img src="{{ url_for('static', filename='assets/logo.png') }}" alt="ispice majesty Logo" class="brand-logo-img"></a>
+            <nav class="nav-menu"><a href="{{ url_for('home') }}" class="nav-link">Exhibition</a><a href="{{ url_for('customer_restaurants') }}" class="nav-link">Restaurants</a><a href="{{ url_for('public_menu') }}" class="nav-link">Gourmet Menu</a><a href="{{ url_for('about') }}" class="nav-link">About</a><a href="{{ url_for('faq') }}" class="nav-link">Help / FAQ</a><a href="{{ url_for('contact') }}" class="nav-link">Contact</a><details class="nav-dropdown"><summary class="nav-link">My pages <i data-lucide="chevron-down"></i></summary><div class="nav-dropdown-menu"><a href="{{ url_for('customer_dashboard') }}"><i data-lucide="layout-dashboard"></i>Dashboard</a><a href="{{ url_for('customer_restaurants') }}"><i data-lucide="store"></i>Restaurants</a><a href="{{ url_for('public_menu') }}"><i data-lucide="utensils"></i>Gourmet menu</a><a href="{{ url_for('customer_restaurant_details') }}"><i data-lucide="map-pin"></i>Venue details</a><a href="{{ url_for('customer_orders') }}"><i data-lucide="receipt"></i>My orders</a><a href="{{ url_for('customer_tracking') }}"><i data-lucide="navigation"></i>Track order</a><a href="{{ url_for('customer_profile') }}"><i data-lucide="user"></i>My profile</a><a href="{{ url_for('customer_feedback') }}"><i data-lucide="message-square-heart"></i>Feedback</a><a href="{{ url_for('customer_cart') }}"><i data-lucide="shopping-bag"></i>Cart</a><a href="{{ url_for('public_reserve') }}"><i data-lucide="calendar"></i>Reserve a table</a><a href="{{ url_for('public_track') }}"><i data-lucide="map"></i>Live GPS</a><a href="{{ url_for('public_privacy') }}"><i data-lucide="shield"></i>Privacy & terms</a></div></details></nav>
+            <div class="nav-actions"><a href="{{ url_for('login') }}" class="icon-btn" title="Customer sign in"><i data-lucide="user"></i><span class="btn-text">Sign in</span></a><a href="{{ url_for('customer_cart') }}" class="cart-trigger-btn" title="Shopping Cart"><i data-lucide="shopping-bag"></i></a></div>
+        </div>
+    </header>
+
+    <main class="track-main" style="max-width: 1200px; margin: 3rem auto; padding: 0 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div>
+                <span class="status-badge status-dispatched" style="font-size: 0.9rem; padding: 0.4rem 1rem;"><i data-lucide="truck"></i> DISPATCHED — EN ROUTE</span>
+                <h1 style="font-size: 2.5rem; margin-top: 0.5rem;">Live Delivery Tracking #101</h1>
+            </div>
+            <div style="text-align: right;">
+                <span style="font-size: 0.85rem; color: var(--text-muted);">PREDICTED ETA</span>
+                <h2 style="color: var(--primary); font-size: 2.25rem;" id="etaDisplay">18 MINS</h2>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+            <div style="background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 2rem;">
+                <h3 style="margin-bottom: 1rem;"><i data-lucide="navigation"></i> Dynamic GPS Route Tracking</h3>
+                <canvas id="trackCanvas" width="650" height="380" style="width: 100%; height: 380px; background: #07090C; border-radius: 12px; border: 1px solid var(--glass-border);"></canvas>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div style="background: var(--bg-card); border: 1px solid var(--glass-border-light); border-radius: var(--radius-lg); padding: 1.75rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--primary); color: #000; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800;">MV</div>
+                        <div>
+                            <h3 style="font-size: 1.15rem;">Marcus Vance</h3>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">Delivery Partner • Stealth E-Bike</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.88rem; color: var(--text-muted); border-top: 1px solid var(--glass-border); padding-top: 0.85rem;">
+                        <span>Rating: <strong style="color: #FFB800;">4.9 / 5.0 ★</strong></span>
+                        <span>Deliveries: <strong style="color: var(--text-main);">142</strong></span>
+                    </div>
+                </div>
+
+                <div style="background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 1.75rem;">
+                    <h3 style="margin-bottom: 1rem;">Order Items Summary</h3>
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.9rem; color: var(--text-muted);">
+                        <li>• 1x AURA Prime Wagyu Truffle ($28.50)</li>
+                        <li>• 1x Smoked Ember Old Fashioned ($18.00)</li>
+                    </ul>
+                    <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1.1rem; border-top: 1px solid var(--glass-border); margin-top: 1rem; padding-top: 1rem; color: var(--text-main);">
+                        <span>Total Paid</span>
+                        <span style="color: var(--primary);">$46.50</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+
+        const canvas = document.getElementById('trackCanvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let progress = 0;
+
+            function animateMap() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const rLat = { x: 120, y: 190, name: "AURA Wagyu House" };
+                const cLat = { x: 530, y: 190, name: "Customer Address" };
+
+                ctx.strokeStyle = "rgba(255, 157, 0, 0.3)";
+                ctx.lineWidth = 4;
+                ctx.setLineDash([8, 6]);
+                ctx.beginPath();
+                ctx.moveTo(rLat.x, rLat.y);
+                ctx.lineTo(cLat.x, cLat.y);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = "#00E676";
+                ctx.beginPath(); ctx.arc(rLat.x, rLat.y, 10, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = "#FFF"; ctx.fillText(rLat.name, rLat.x - 35, rLat.y - 18);
+
+                ctx.fillStyle = "#FF3B30";
+                ctx.beginPath(); ctx.arc(cLat.x, cLat.y, 10, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = "#FFF"; ctx.fillText(cLat.name, cLat.x - 30, cLat.y - 18);
+
+                progress += 0.003;
+                if (progress > 1) progress = 0;
+
+                const currX = rLat.x + (cLat.x - rLat.x) * progress;
+                const currY = rLat.y + (cLat.y - rLat.y) * progress;
+
+                ctx.fillStyle = "#FF9D00";
+                ctx.shadowColor = "#FF9D00";
+                ctx.shadowBlur = 15;
+                ctx.beginPath(); ctx.arc(currX, currY, 12, 0, Math.PI * 2); ctx.fill();
+                ctx.shadowBlur = 0;
+
+                ctx.fillStyle = "#000";
+                ctx.font = "bold 10px sans-serif";
+                ctx.fillText("GPS", currX - 10, currY + 3);
+
+                requestAnimationFrame(animateMap);
+            }
+
+            animateMap();
+        }
+    </script>
+</body>
+</html>

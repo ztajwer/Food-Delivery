@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gourmet Menu | ispice majesty</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Syne:wght@700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+      <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+
+<body class="dark-theme theme-charcoal">
+
+    <!-- 3D WebGL Background Canvas Container for Standalone Pages -->
+    <div id="page-3d-container"
+        style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; opacity: 0.55;">
+    </div>
+
+    <!-- SECTION 1: HEADER NAVBAR (Identical to Home Page) -->
+    <header class="navbar scrolled" id="navbar" style="z-index: 100;">
+        <div class="nav-container">
+            <a href="{{url_for('home')}}" class="brand-logo">
+                <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="ispice majesty Logo" class="brand-logo-img">
+            </a>
+
+            <nav class="nav-menu" id="navMenu">
+                <a href="{{url_for('home')}}" class="nav-link ">Exhibition</a>
+                <a href="{{url_for('rest')}}" class="nav-link ">Restaurants</a>
+                <a href="{{url_for('menu')}}" class="nav-link active">Gourmet Menu</a>
+                <a href="{{url_for('about')}}" class="nav-link ">About</a>
+                <a href="{{url_for('faq')}}" class="nav-link ">Help / FAQ</a>
+                <a href="{{url_for('contact')}}" class="nav-link ">Contact</a>
+                <details class="nav-dropdown">
+                    <summary class="nav-link">
+                        My pages
+                        <i data-lucide="chevron-down"></i>
+                    </summary>
+
+                    <div class="nav-dropdown-menu">
+
+                        <!-- Customer Dashboard -->
+                        <a href="{{ url_for('customer_dashboard') }}">
+                            <i data-lucide="layout-dashboard"></i>
+                            Dashboard
+                        </a>
+
+                        <!-- Restaurants -->
+                        <a href="{{ url_for('customer_restaurants') }}">
+                            <i data-lucide="store"></i>
+                            Restaurants
+                        </a>
+
+                        <!-- Menu -->
+                        <a href="{{ url_for('public_menu') }}">
+                            <i data-lucide="utensils"></i>
+                            Gourmet menu
+                        </a>
+
+                        <!-- Restaurant Details -->
+                        <a href="{{ url_for('customer_restaurant_details') }}">
+                            <i data-lucide="map-pin"></i>
+                            Venue details
+                        </a>
+
+                        <!-- Orders -->
+                        <a href="{{ url_for('customer_orders') }}">
+                            <i data-lucide="receipt"></i>
+                            My orders
+                        </a>
+
+                        <!-- Tracking -->
+                        <a href="{{ url_for('customer_tracking') }}">
+                            <i data-lucide="navigation"></i>
+                            Track order
+                        </a>
+
+                        <!-- Profile -->
+                        <a href="{{ url_for('customer_profile') }}">
+                            <i data-lucide="user"></i>
+                            My profile
+                        </a>
+
+                        <!-- Feedback -->
+                        <a href="{{ url_for('customer_feedback') }}">
+                            <i data-lucide="message-square-heart"></i>
+                            Feedback
+                        </a>
+
+                        <!-- Cart -->
+                        <a href="{{ url_for('customer_cart') }}">
+                            <i data-lucide="shopping-bag"></i>
+                            Cart
+                        </a>
+
+                        <!-- Reserve Table -->
+                        <a href="{{ url_for('public_reserve') }}">
+                            <i data-lucide="calendar"></i>
+                            Reserve a table
+                        </a>
+
+                        <!-- Live GPS -->
+                        <a href="{{ url_for('public_track') }}">
+                            <i data-lucide="map"></i>
+                            Live GPS
+                        </a>
+
+                        <!-- Privacy & Terms -->
+                        <a href="{{ url_for('public_privacy') }}">
+                            <i data-lucide="shield"></i>
+                            Privacy & terms
+                        </a>
+
+                    </div>
+                </details>
+
+            </nav>
+
+            <div class="nav-actions">
+                <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Theme (Dark / Light)">
+                    <i data-lucide="sun" class="sun-icon"></i>
+                    <i data-lucide="moon" class="moon-icon"></i>
+                </button>
+
+                <a href="{{ url_for('login') }}" class="icon-btn" title="Customer sign in">
+                    <i data-lucide="shield-check"></i>
+                    <span class="btn-text">Sign in</span>
+                </a>
+
+                <a href="{{ url_for('public_reserve') }}" class="icon-btn" title="Book a Table">
+                    <i data-lucide="calendar"></i>
+                    <span class="btn-text">Reserve</span>
+                </a>
+
+                <a href="{{ url_for('customer_cart') }}" class="cart-trigger-btn" id="cartToggleBtn" title="Shopping Cart">
+                    <i data-lucide="shopping-bag"></i>
+                    <span class="cart-badge" id="cartCount">1</span>
+                </a>
+
+                <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION 2: PAGE HERO BANNER -->
+    <div class="page-header-banner" style="position: relative; z-index: 2;">
+        <span class="sub-heading"><i data-lucide="sparkles"></i> CURATED DISHES</span>
+        <h1 class="page-title">GOURMET <span class='gradient-text'>MENU CATALOG</span></h1>
+        <p class="page-subtitle">Explore A5 Miyazaki Wagyu, wood-fired pizzas, and artisan craft drinks.</p>
+    </div>
+
+    <!-- SECTION 3: MAIN INTERACTIVE WORKSPACE -->
+    <main class="container" style="position: relative; z-index: 2; padding-bottom: 4rem;">
+
+        <div class="menu-display-container list-mode">
+            <div
+                style="background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 1.75rem 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; backdrop-filter: blur(20px);">
+                <div>
+                    <span style="color: var(--primary); font-weight: 800; font-size: 0.85rem;">01 / 3D BURGER</span>
+                    <h3 style="font-size: 1.35rem; margin: 0.2rem 0;">ispice majesty Prime Wagyu Truffle</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">A5 Miyazaki Wagyu patty, 18-month cave aged
+                        cheddar, black winter truffle aioli.</p>
+                </div>
+                <div style="text-align: right; min-width: 140px;">
+                    <span
+                        style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800; color: var(--primary);">$28.50</span>
+                    <div style="margin-top: 0.5rem;">
+                        <a href="{{ url_for('customer_cart') }}" class="btn btn-primary btn-sm"><i data-lucide="plus"></i> Add to
+                            Cart</a>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                style="background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 1.75rem 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; backdrop-filter: blur(20px);">
+                <div>
+                    <span style="color: var(--primary); font-weight: 800; font-size: 0.85rem;">02 / WOOD-FIRED</span>
+                    <h3 style="font-size: 1.35rem; margin: 0.2rem 0;">Artisan Black Truffle Pizza</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">72-hour sourdough fermented crust, black
+                        truffle shavings, imported Italian fior di latte cheese.</p>
+                </div>
+                <div style="text-align: right; min-width: 140px;">
+                    <span
+                        style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800; color: var(--primary);">$32.00</span>
+                    <div style="margin-top: 0.5rem;">
+                        <a href="{{ url_for('customer_cart') }}" class="btn btn-primary btn-sm"><i data-lucide="plus"></i> Add to
+                            Cart</a>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                style="background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 1.75rem 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; backdrop-filter: blur(20px);">
+                <div>
+                    <span style="color: var(--primary); font-weight: 800; font-size: 0.85rem;">03 / POWER BOWL</span>
+                    <h3 style="font-size: 1.35rem; margin: 0.2rem 0;">Ember Salmon Harvest Bowl</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Pan-seared wild salmon, organic quinoa,
+                        roasted heirloom beets, green goddess dressing.</p>
+                </div>
+                <div style="text-align: right; min-width: 140px;">
+                    <span
+                        style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800; color: var(--primary);">$26.00</span>
+                    <div style="margin-top: 0.5rem;">
+                        <a href="{{ url_for('customer_cart') }}" class="btn btn-primary btn-sm"><i data-lucide="plus"></i> Add to
+                            Cart</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- SECTION 4: FEATURE HIGHLIGHTS & METRICS GRID -->
+    <section class="container" style="position: relative; z-index: 2; padding-bottom: 5rem;">
+
+        <div
+            style="background: var(--bg-card); border: 1px solid var(--glass-border-light); border-radius: var(--radius-lg); padding: 2.5rem; text-align: center;">
+            <h3 style="font-size: 1.75rem; margin-bottom: 0.5rem;">Looking for Custom Flavor Combinations?</h3>
+            <p style="color: var(--text-muted); max-width: 550px; margin: 0 auto 1.5rem auto;">Take our AI Taste
+                Concierge Questionnaire on the Exhibition Home Page to receive personalized dish recommendations.</p>
+            <a href="{{ url_for('home') }}#quiz" class="btn btn-primary btn-glow"><i data-lucide="wand-2"></i> Launch AI Taste
+                Questionnaire</a>
+        </div>
+
+    </section>
+
+    <!-- SECTION 5: SITE FOOTER (Identical to Home Page) -->
+    <footer class="site-footer" style="position: relative; z-index: 2;">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <a href="{{ url_for('home') }}" class="brand-logo">
+                        <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="ispice majesty Logo" class="brand-logo-img">
+                    </a>
+                    <p>Interactive digital culinary exhibition & 3D food showcase.</p>
+                </div>
+
+                <div class="footer-links-group">
+                    <div class="footer-col">
+                        <h4>Navigation</h4>
+                        <ul>
+                            <li><a href="../customer/restaurants.html">Restaurants</a></li>
+                            <li><a href="../public/menu.html">Gourmet Menu</a></li>
+                            <li><a href="../public/about.html">About Us</a></li>
+                            <li><a href="../public/faq.html">Help / FAQ</a></li>
+                            <li><a href="../public/reserve.html">Reserve Table</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>Your workspace</h4>
+                        <ul>
+                            <li><a href="../customer/dashboard.html">Customer Portal</a></li>
+                            <li><a href="../delivery/dashboard.html">Delivery Fleet App</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>Location</h4>
+                        <ul class="contact-info">
+                            <li>845 Grand Avenue, Culinary District</li>
+                            <li>+1 (800) 555-ISPICE</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 ispice majesty Inc. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 3D Canvas Engine & Theme Toggle Script -->
+    <script src="{{ url_for('root_asset', filename='page_3d.js') }}"></script>
+    <script>
+
+    </script>
+</body>
+
+</html>

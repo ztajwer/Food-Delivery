@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create delivery partner account | ispice majesty</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dark-theme auth-page">
+    <main class="auth-shell auth-shell-compact">
+        <section class="auth-showcase" aria-label="ispice majesty delivery partner account">
+            <a href="{{ url_for('home') }}" class="brand-logo auth-brand"><img src="{{ url_for('static', filename='assets/logo.png') }}" class="brand-logo-img" alt="ispice majesty home"></a>
+            <div class="auth-showcase-copy"><span class="sub-heading"><i data-lucide="bike"></i> Join the delivery fleet</span><h1>DELIVER<br><span class="gradient-text">EXCELLENCE.</span></h1><p>Create a partner profile and help guests receive every order on time.</p></div>
+            <div class="auth-showcase-footer"><span><i data-lucide="map"></i> Route-aware dispatch</span><span><i data-lucide="shield-check"></i> Secure partner workspace</span></div>
+        </section>
+        <section class="auth-card-wrap"><div class="auth-card">
+            <div class="auth-card-heading"><div><span class="auth-eyebrow">Delivery partner</span><h2>Create account</h2></div><span class="secure-pill"><i data-lucide="lock-keyhole"></i> Secure</span></div>
+            <p class="auth-intro">Enter your details to access the fleet portal.</p>
+            <form class="auth-form" method="POST" action="{{ url_for('delivery_register') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="auth-form-grid"><div class="form-group"><label for="partnerName">Full name</label><input id="partnerName" name="name" type="text" autocomplete="name" placeholder="Ava Morgan" required></div><div class="form-group"><label for="partnerPhone">Phone number</label><input id="partnerPhone" name="phone" type="tel" autocomplete="tel" placeholder="+1 (555) 000-0000" required></div></div>
+                <div class="form-group"><label for="partnerEmail"><i data-lucide="mail"></i> Email address</label><input id="partnerEmail" name="email" type="email" autocomplete="email" placeholder="driver@example.com" required></div>
+                <div class="form-group"><label for="partnerPassword"><i data-lucide="key-round"></i> Password</label><input id="partnerPassword" name="password" type="password" autocomplete="new-password" placeholder="At least 6 characters" minlength="6" required></div>
+                <div class="auth-form-grid"><div class="form-group"><label for="vehicleType">Vehicle type</label><select id="vehicleType" name="vehicle_type" required><option>Bicycle</option><option>Motorbike</option><option>Car</option><option>Electric scooter</option></select></div><div class="form-group"><label for="licenseNumber">License / ID</label><input id="licenseNumber" name="license_number" type="text" placeholder="Optional"></div></div>
+                {% if error %}<p class="auth-status is-visible is-error" aria-live="polite">{{ error }}</p>{% endif %}
+                <button type="submit" class="btn btn-primary btn-glow auth-submit">Create partner account <i data-lucide="arrow-right"></i></button>
+            </form>
+            <div class="auth-divider"><span>Already registered?</span></div><a href="{{ url_for('delivery_login') }}" class="btn btn-outline auth-secondary-action">Sign in instead</a><a href="{{ url_for('home') }}" class="auth-back-link"><i data-lucide="arrow-left"></i> Back to exhibition</a>
+        </div></section>
+    </main>
+    <script src="https://unpkg.com/lucide@latest"></script><script>if (typeof lucide !== 'undefined') lucide.createIcons();</script>
+</body>
+</html>
