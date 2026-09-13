@@ -1996,5 +1996,14 @@ def forbidden(error):
 # =============================================================================
 
 if __name__ == "__main__":
-    print("✨ Starting ispice majesty Food Delivery App on http://127.0.0.1:5000 ✨")
-    app.run(debug=True)
+    import socket
+    port = 5000
+    try:
+        test_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        test_sock.bind(("127.0.0.1", port))
+        test_sock.close()
+    except OSError:
+        port = 5001
+
+    print(f"✨ Starting ispice majesty Food Delivery App on http://127.0.0.1:{port} ✨")
+    app.run(debug=True, port=port)
