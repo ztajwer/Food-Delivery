@@ -24,7 +24,7 @@
                 <a href="{{ url_for('about') }}" class="nav-link ">About</a>
                 <a href="{{ url_for('faq') }}" class="nav-link ">Help / FAQ</a>
                 <a href="{{ url_for('contact') }}" class="nav-link ">Contact</a>
-                <details class="nav-dropdown"><summary class="nav-link">My pages <i data-lucide="chevron-down"></i></summary><div class="nav-dropdown-menu"><a href="dashboard.html"><i data-lucide="layout-dashboard"></i>Dashboard</a><a href="restaurants.html"><i data-lucide="store"></i>Restaurants</a><a href="../public/menu.html"><i data-lucide="utensils"></i>Gourmet menu</a><a href="restaurant_details.html"><i data-lucide="map-pin"></i>Venue details</a><a href="orders.html"><i data-lucide="receipt"></i>My orders</a><a href="tracking.html"><i data-lucide="navigation"></i>Track order</a><a href="profile.html"><i data-lucide="user"></i>My profile</a><a href="feedback.html"><i data-lucide="message-square-heart"></i>Feedback</a><a href="cart.html"><i data-lucide="shopping-bag"></i>Cart</a><a href="../public/reserve.html"><i data-lucide="calendar"></i>Reserve a table</a><a href="../public/track.html"><i data-lucide="map"></i>Live GPS</a><a href="../public/privacy.html"><i data-lucide="shield"></i>Privacy & terms</a></div></details>
+                <details class="nav-dropdown"><summary class="nav-link">My pages <i data-lucide="chevron-down"></i></summary><div class="nav-dropdown-menu"><a href="{{ url_for('customer_dashboard') }}"><i data-lucide="layout-dashboard"></i>Dashboard</a><a href="{{ url_for('customer_restaurants') }}"><i data-lucide="store"></i>Restaurants</a><a href="{{ url_for('public_menu') }}"><i data-lucide="utensils"></i>Gourmet menu</a><a href="{{ url_for('customer_restaurant_details') }}"><i data-lucide="map-pin"></i>Venue details</a><a href="{{ url_for('customer_orders') }}"><i data-lucide="receipt"></i>My orders</a><a href="{{ url_for('customer_tracking') }}"><i data-lucide="navigation"></i>Track order</a><a href="{{ url_for('customer_profile') }}"><i data-lucide="user"></i>My profile</a><a href="{{ url_for('customer_feedback') }}"><i data-lucide="message-square-heart"></i>Feedback</a><a href="{{ url_for('customer_cart') }}"><i data-lucide="shopping-bag"></i>Cart</a><a href="{{ url_for('public_reserve') }}"><i data-lucide="calendar"></i>Reserve a table</a><a href="{{ url_for('public_track') }}"><i data-lucide="map"></i>Live GPS</a><a href="{{ url_for('public_privacy') }}"><i data-lucide="shield"></i>Privacy & terms</a></div></details>
             </nav>
 
             <div class="nav-actions">
@@ -85,8 +85,22 @@
                             <td>ispice majesty</td>
                             <td>{{ order.order_details }}</td>
                             <td>${{ order.total_amount }}</td>
-                            <td><span class="status-badge {% if order.status == 'Delivered' %}status-delivered{% else %}status-dispatched{% endif %}">{{ order.status }}</span></td>
-                            <td>{% if order.status not in ['Delivered', 'Cancelled'] %}<a href="{{ url_for('customer_tracking') }}" style="color: var(--primary); font-weight:700;">Track</a>{% else %}<a href="{{ url_for('customer_feedback') }}" style="color: var(--primary); font-weight:700;">Rate</a>{% endif %}</td>
+                            <td><span class="status-badge {% if order.status == 'Delivered' %}status-delivered{% elif order.status == 'Cancelled' %}status-offline{% else %}status-dispatched{% endif %}">{{ order.status }}</span></td>
+                            <td>
+                                {% if order.status not in ['Delivered', 'Cancelled'] %}
+                                    <a href="{{ url_for('customer_tracking') }}" style="color: var(--primary); font-weight:700;">Track</a>
+                                    {% if order.status in ['Placed', 'Pending', 'Preparing'] %}
+                                    <form method="POST" action="{{ url_for('cancel_order', order_id=order.order_id) }}" style="display:inline; margin-left: 0.5rem;" onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" style="background:none; border:none; color:#ff6b6b; cursor:pointer; font-weight:700; font-size:0.9rem; text-decoration:underline;">Cancel</button>
+                                    </form>
+                                    {% endif %}
+                                {% elif order.status == 'Delivered' %}
+                                    <a href="{{ url_for('customer_feedback') }}" style="color: var(--accent-green); font-weight:700;">Rate</a>
+                                {% else %}
+                                    <span style="color: var(--text-muted); font-size: 0.85rem;">Cancelled</span>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% endfor %}
                     {% else %}
@@ -159,18 +173,18 @@
                     <div class="footer-col">
                         <h4>Navigation</h4>
                         <ul>
-                            <li><a href="../customer/restaurants.html">Restaurants</a></li>
-                            <li><a href="../public/menu.html">Gourmet Menu</a></li>
-                            <li><a href="../public/about.html">About Us</a></li>
-                            <li><a href="../public/faq.html">Help / FAQ</a></li>
-                            <li><a href="../public/reserve.html">Reserve Table</a></li>
+                            <li><a href="{{ url_for('customer_restaurants') }}">Restaurants</a></li>
+                            <li><a href="{{ url_for('public_menu') }}">Gourmet Menu</a></li>
+                            <li><a href="{{ url_for('about') }}">About Us</a></li>
+                            <li><a href="{{ url_for('faq') }}">Help / FAQ</a></li>
+                            <li><a href="{{ url_for('public_reserve') }}">Reserve Table</a></li>
                         </ul>
                     </div>
 
                     <div class="footer-col">
                         <h4>Your workspace</h4>
                         <ul>
-                            <li><a href="../customer/dashboard.html">Customer Portal</a></li>
+                            <li><a href="{{ url_for('customer_dashboard') }}">Customer Portal</a></li>
                         </ul>
                     </div>
 

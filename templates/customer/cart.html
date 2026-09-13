@@ -166,18 +166,18 @@
                     <div class="footer-col">
                         <h4>Navigation</h4>
                         <ul>
-                            <li><a href="../customer/restaurants.html">Restaurants</a></li>
-                            <li><a href="../public/menu.html">Gourmet Menu</a></li>
-                            <li><a href="../public/about.html">About Us</a></li>
-                            <li><a href="../public/faq.html">Help / FAQ</a></li>
-                            <li><a href="../public/reserve.html">Reserve Table</a></li>
+                            <li><a href="{{ url_for('customer_restaurants') }}">Restaurants</a></li>
+                            <li><a href="{{ url_for('public_menu') }}">Gourmet Menu</a></li>
+                            <li><a href="{{ url_for('about') }}">About Us</a></li>
+                            <li><a href="{{ url_for('faq') }}">Help / FAQ</a></li>
+                            <li><a href="{{ url_for('public_reserve') }}">Reserve Table</a></li>
                         </ul>
                     </div>
 
                     <div class="footer-col">
                         <h4>Your workspace</h4>
                         <ul>
-                            <li><a href="../customer/dashboard.html">Customer Portal</a></li>
+                            <li><a href="{{ url_for('customer_dashboard') }}">Customer Portal</a></li>
                         </ul>
                     </div>
 

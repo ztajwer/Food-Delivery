@@ -34,6 +34,9 @@
                     {% if error %}
                     <p class="auth-status is-visible is-error" aria-live="polite">{{ error }}</p>
                     {% endif %}
+                    {% if success %}
+                    <p class="auth-status is-visible" style="color: #00e676; margin-top: 0.5rem;" aria-live="polite">{{ success }}</p>
+                    {% endif %}
                 </form>
                 <div class="auth-divider"><span>New to ispice majesty?</span></div>
                 <a href="{{ url_for('register') }}" class="btn btn-outline auth-secondary-action">Create customer account</a>

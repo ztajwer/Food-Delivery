@@ -479,14 +479,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    if (checkoutBtn) {
+    if (checkoutBtn && !window.location.pathname.includes('/customer/cart')) {
         checkoutBtn.addEventListener('click', () => {
-            if (cart.length === 0) return;
-            cart = [];
-            localStorage.removeItem('ispice-cart');
-            updateCartUI();
-            toggleCart(false);
-            showToast("Order placed successfully! Prepared in thermal packaging.", "success");
+            if (cart.length === 0) {
+                showToast("Your basket is empty. Please add delicious items first!");
+                return;
+            }
+            window.location.href = '/customer/cart';
         });
     }
 
